@@ -1,0 +1,68 @@
+extends  ../durable_medical_list_layout
+block scripts
+    script(src="/javascripts/medical_search_depreciate.js")
+block content
+    br
+    ol.breadcrumb
+        li
+            a(href="/medical_add_asset/medical_add_asset") กลับ
+        li.active รายการค่าเสื่อมครุภัณฑ์ทางการแพทย์
+    .well.well-sm
+        div.form-inline
+            .row
+                .col-md-12
+                    .form-group
+                        label(for="#slItems") รายการครุภัณฑ์ :
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        select#slItems.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for a in data.items
+                                option(value="#{a.id}") #{a.name}
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        button#btnSearch_items(type="button").btn.btn-success.btn-sm ค้นหา
+                        button#btnPrint_items(type="button").btn.btn-danger.btn-sm ปริ้น
+            .row
+                .col-md-6
+                    .form-group
+                        label(for="#slRoom") ห้องที่ใช้ :
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        select#slRoom.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for c in data.rooms
+                                option(value="#{c.id}") #{c.name}
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        button#btnSearch_room(type="button").btn.btn-success.btn-sm ค้นหา
+                        button#btnPrint_room(type="button").btn.btn-danger.btn-sm ปริ้น
+                .col-md-6
+                    .form-group
+                        label(for="#slType") ประเภทครุภัณฑ์ :
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        select#slType.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for b in data.types
+                                option(value="#{b.id}") #{b.name}
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        button#btnSearch_type(type="button").btn.btn-success.btn-sm ค้นหา
+                        button#btnPrint_type(type="button").btn.btn-danger.btn-sm ปริ้น
+    .panel.panel-primary
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-comments-o
+                | &nbsp; รายการค่าเสื่อมครุภัณฑ์ทางการแพทย์
+        .panel-body
+            table.table.table-hover#tblDurable_show
+                thead
+                    tr
+                        td ลำดับ
+                        td(style="width : 90px") วันที่รับ
+                        td(style="width : 150px") รหัส/จำนวน
+                        td(style="width : 100px") ประเภท
+                        td ชื่อครุภัณฑ์
+                        td ราคา/หน่วย
+                        td ค่าเสื่อมลดลงต่อปี
+                        td อายุการใช้งาน
+                        td ค่าเสื่อมครุภัณฑ์
+                        td มูลค่าคงเหลือ
+                        td
+                            i.fa.fa-cog.fa-spin.fa-3w.fa-fw
+                    tbody

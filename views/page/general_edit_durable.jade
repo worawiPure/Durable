@@ -1,0 +1,127 @@
+extends  ../durable_general_layout
+block scripts
+    script(src="/javascripts/general_edit_asset.js")
+block content
+    br
+    .panel.panel-primary
+        .panel-heading
+            h3.panel-title
+                i.glyphicon.glyphicon-user
+                | &nbsp; ปรับปรุงรายการครุภัณฑ์
+        .panel-body
+            input(type="hidden" value="#{data.detail.id}")#txtId
+            .row
+                .col-md-3
+                    .form-group
+                        label(for="#txtDate_receive") วันที่รับ
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        #datetimepicker1.input-group(data-datepicker)
+                            input#txtDate_receive.form-control(type='text',value="#{data.detail.receive_date2}")
+                            span.input-group-addon
+                                span.glyphicon.glyphicon-calendar
+                .col-md-4
+                    .form-group
+                        label(for="SlType") ประเภท
+                        select#SlType.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for c in data.types
+                                if c.id == data.detail.durable_type
+                                    option(value="#{c.id}",selected="selected") #{c.name}
+                                else
+                                    option(value="#{c.id}") #{c.name}
+            .row
+                .col-md-6
+                    .form-group
+                        label(for="SlItems") รายการครุภัณฑ์
+                        select#SlItems.form-control
+                            for d in data.items
+                                if d.id == data.detail.durable_items
+                                    option(value="#{d.id}",selected="selected") #{d.name}
+
+                .col-md-4#divItems_code
+                    .form-group
+                        label(for="txtItems_code") รหัส
+                        input(type="text", value="#{data.detail.items_code}", readonly)#txtItems_code.form-control
+                .col-md-2
+                    .form-group
+                        label(for="txtPieces") ชิ้น
+                        input(type="text",name="pieces", value="#{data.detail.pieces}" ,readonly)#txtPieces.form-control
+            .row
+                .col-md-8
+                    .form-group
+                        label(for="txtSpec") Spec
+                        textarea#txtSpec(type="text" ,rows="3" ,placeholder="Spec").form-control #{data.detail.spec}
+                .col-md-4
+                    .form-group
+                        label(for="txtOrder_no") เลขที่เอกสารใบสั่งซื้อ
+                        input(type="text",name="order_no", value="#{data.detail.order_no}")#txtOrder_no.form-control
+            .row
+                .col-md-4
+                    .form-group
+                        label(for="SlWheremoney") วิธีการได้มา
+                        select#SlWheremoney.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for g in data.moneys
+                                if g.id == data.detail.wheremoney
+                                    option(value="#{g.id}",selected="selected") #{g.provide}
+                                else
+                                    option(value="#{g.id}") #{g.provide}
+                .col-md-3
+                    .form-group
+                        label(for="txtPrice") ราคา/หน่วย
+                        input(type="text",name="price",value="#{data.detail.price}")#txtPrice.form-control
+                .col-md-4
+                    .form-group
+                        label(for="SlCompany") ซื้อจาก
+                        select#SlCompany.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for h in data.companys
+                                if h.id == data.detail.company
+                                    option(value="#{h.id}",selected="selected") #{h.shop}
+                                else
+                                    option(value="#{h.id}") #{h.shop}
+            .row
+                .col-md-4
+                    .form-group
+                        label(for="SlStatus") สถานะครุภัณฑ์
+                        select#SlStatus.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for j in data.status
+                                if j.id == data.detail.status
+                                    option(value="#{j.id}",selected="selected") #{j.name}
+                                else
+                                    option(value="#{j.id}") #{j.name}
+                .col-md-4#divDate_distribute
+                    .form-group
+                        label(for="#txtdistribute_date") วันที่จำหน่าย
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        #datetimepicker2.input-group(data-datepicker)
+                            input#txtdistribute_date.form-control(type='text',value="#{data.detail.distribute_date2}")
+                            span.input-group-addon
+                                span.glyphicon.glyphicon-calendar
+                .col-md-4
+                    .form-group
+                        label(for="SlRoom") ใช้ประจำที่
+                        select#SlRoom.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for i in data.rooms
+                                if i.id == data.detail.room
+                                    option(value="#{i.id}",selected="selected") #{i.name}
+                                else
+                                    option(value="#{i.id}") #{i.name}
+            .row
+                .col-md-4
+                    .form-group
+                        label(for="SlChange_room") ย้ายไปห้อง
+                        select#SlChange_room.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for j in data.rooms
+                                if j.id == data.detail.change_room
+                                    option(value="#{j.id}",selected="selected") #{j.name}
+                                else
+                                    option(value="#{j.id}") #{j.name}
+                .col-md-7
+                    .form-group
+                        label(for="txtRemark") หมายเหตุ
+                        input(type="text",name="txtRemark",value="#{data.detail.remark}")#txtRemark.form-control
+            button.btn.btn-primary(type="button")#btnEdit บันทึก

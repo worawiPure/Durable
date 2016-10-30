@@ -1,0 +1,70 @@
+extends  ../durable_general_layout
+block scripts
+    script(src="/javascripts/durable_general_items.js")
+block content
+    br
+    ol.breadcrumb
+        li
+            a(href="/general_add_asset/general_add_asset") หน้าหลัก
+        li.active รายการครุภัณฑ์ทั่วไป
+    .well.well-sm#mdlSearch
+        div.form-inline
+            .row
+                .col-md-5
+                    .form-group
+                        label ครุภัณฑ์
+                        | &nbsp;&nbsp;
+                        input#txtSearch(type="text",placeholder="Search..").form-control
+                        | &nbsp;&nbsp;
+                        button#btnSearch(type="button").btn.btn-success.btn-sm ค้นหา
+    .panel.panel-primary
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-comments-o
+                | &nbsp; รายการครุภัณฑ์
+        .panel-body
+            button.btn.btn-danger.pull-right#btnShowSearch
+                i.fa.fa-search
+            button.btn.btn-success.pull-right#btnShowModal
+                i.fa.fa-plus
+                | &nbsp; เพิ่มรายการครุภัณฑ์
+            ul.pagination(data-name="paging")
+            table.table.striped#tblItems
+                thead
+                    tr
+                        td.h7 ลำดับ
+                        td.h7 รายการ
+                        td.h7 รหัสครุภัณฑ์
+                        td.h7 แก้ไข/ลบ
+                    tbody
+            ul.pagination(data-name="paging")
+
+    .modal.fade#mdlNew(tabindex='-1',role='dialog')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-lable='Close')
+                        span(aria-hidden='true') &times;
+                    h3.modal-title  เพิ่ม/แก้ไขรายการ
+                    | &nbsp;
+                    | &nbsp;
+                    | &nbsp;
+                .modal-body
+                    .alert.alert-danger.alert-dismissable(role="alert",style="display: none;")#divAlert
+                        button(type="button",data-dismiss="alert",aria-label="Close").close
+                            span(aria-hidden="true")
+                        p ครุภัณฑ์นี้ได้มีในระบบแล้ว
+                    input(type="hidden" value="")#txtId
+                    .form-group
+                        label(for="txt") ชื่อครุภัณฑ์
+                        input(type="text" placeholder="ชื่อครุภัณฑ์")#txtItemsName.form-control
+                    .form-group
+                        label(for="txt") รหัส
+                        input(type="text" placeholder="รหัส")#txtCode.form-control
+
+                    .modal-footer
+                        button.btn.btn-primary#btnSave
+                            i.fa.fa-save
+                            | &nbsp; บันทึก
+                        button.btn.btn-danger(data-dismiss="modal")
+                            | &nbsp; ปิดหน้าต่าง

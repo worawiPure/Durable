@@ -1,0 +1,65 @@
+extends  ../durable_medical_layout
+block scripts
+    script(src="/javascripts/durable_medical_room.js")
+block content
+    br
+    ol.breadcrumb
+        li
+            a(href="/medical_add_asset/medical_add_asset") หน้าหลัก
+        li.active รายการครุภัณฑ์
+    .well.well-sm#mdlSearch
+        div.form-inline
+            .row
+                .col-md-5
+                    .form-group
+                        label ห้อง
+                        | &nbsp;&nbsp;
+                        input#txtSearch(type="text",placeholder="Search..").form-control
+                        | &nbsp;&nbsp;
+                        button#btnSearch(type="button").btn.btn-success.btn-sm ค้นหา
+    .panel.panel-primary
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-comments-o
+                | &nbsp; รายการห้อง
+        .panel-body
+            button.btn.btn-danger.pull-right#btnShowSearch
+                i.fa.fa-search
+            button.btn.btn-success.pull-right#btnShowModal
+                i.fa.fa-plus
+                | &nbsp; เพิ่มรายการห้อง
+            ul.pagination(data-name="paging")
+            table.table.striped#tblRoom
+                thead
+                    tr
+                        td.h7 ลำดับ
+                        td.h7 ห้อง
+                        td.h7 แก้ไข/ลบ
+                    tbody
+            ul.pagination(data-name="paging")
+
+    .modal.fade#mdlNew(tabindex='-1',role='dialog')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-lable='Close')
+                        span(aria-hidden='true') &times;
+                    h4.modal-title  เพิ่ม/แก้ไขรายการ
+                    | &nbsp;
+                    | &nbsp;
+                    | &nbsp;
+                .modal-body
+                    .alert.alert-danger.alert-dismissable(role="alert",style="display: none;")#divAlert
+                        button(type="button",data-dismiss="alert",aria-label="Close").close
+                            span(aria-hidden="true")
+                        p รหัสแผนกนี้ได้มีในระบบแล้ว
+                    input(type="hidden" value="")#txtId
+                    .form-group
+                        label(for="txtRoomName") ชื่อห้อง
+                        input(type="text")#txtRoomName.form-control
+                    .modal-footer
+                        button.btn.btn-primary#btnSave
+                            i.fa.fa-save
+                            | &nbsp; บันทึก
+                        button.btn.btn-danger(data-dismiss="modal")
+                            | &nbsp; ปิดหน้าต่าง

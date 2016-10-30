@@ -1,0 +1,72 @@
+doctype html
+html
+    head
+        title โปรแกรมครุภัณฑ์ verion 0.0.1
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        link(rel="stylesheet", href="/libs/bootstrap/dist/css/bootstrap.min.css")
+        link(rel="stylesheet", href="/libs/font-awesome/css/font-awesome.min.css")
+        link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/material.min.css")
+        link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/ripples.min.css")
+        link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/roboto.min.css")
+        link(rel="stylesheet", href="/stylesheets/style.css")
+        script(src="/libs/jquery/dist/jquery.min.js")
+        script(src="/libs/bootstrap/dist/js/bootstrap.min.js")
+        script(src="/libs/bootstrap-material-design/dist/js/material.min.js")
+        script(src="/libs/bootstrap-material-design/dist/js/ripples.min.js")
+        script(src="/libs/paging/jquery.paging.min.js")
+        script(src="/javascripts/app.js")
+        script(src="/libs/lodash/lodash.min.js")
+        script(src="/libs/moment/moment.js")
+            script.
+                $(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+                $('input[readonly]').css('background-color', 'white');
+                $('input[disabled="disabled"]').css('background-color', 'white');
+                })
+            block scripts
+body
+    nav.navbar.navbar-primary.navbar-fixed-top
+        .container
+            .navbar-header
+                button(type="button", data-toggle="collapse", data-taget="#navbar",
+                aria-expanded="false", aria-controls="navbar").navbar-toggle.collapsed
+                    span.sr-only Toggle navigation
+                    span.icon-bar
+                    span.icon-bar
+                a.navbar-brand(href="#")
+                    img.img-circle(src="/images/hos_logo.png", height="41")
+                a.navbar-brand(href="#")
+                    | &nbsp; โปรแกรมครุภัณฑ์
+            #navbar.navbar-collapse.collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="/durable_admin/") หน้าแรก
+                p.navbar-text.navbar-right #{session.fullname}
+                ul.nav.navbar-nav.pull-right
+                    li.dropdown
+                        a(href="#", data-toggle="dropdown", role="button",
+                        aria-haspopup="true", aria-expanded="false").dropdown-toggle
+                            i.fa.fa-user
+                        ul.dropdown-menu
+                            li
+                                a(href="#")
+                                    i.fa.fa-edit
+                                    | &nbsp;&nbsp; ข้อมูลส่วนตัว
+                            li
+                                a(href="/users/logout")
+                                    i.fa.fa-power-off
+                                    | &nbsp;&nbsp;ออกจากระบบ
+    .col-md-12
+        block content
+        nav.navbar.navbar-default.navbar-fixed-bottom
+            .container
+                .navbar-header
+                    button(type="button", data-toggle="collapse", data-taget="#navbar",
+                    aria-expanded="false", aria-controls="navbar").navbar-toggle.collapsed
+                        span.sr-only Toggle navigation
+                        span.icon-bar
+                        span.icon-bar
+                p.navbar-text.navbar-right
+                    | ระบบครุภัณฑ์ @ ศูนย์ข้อมูล โรงพยาบาลกันทรวิชัย จังหวัดมหาสารคาม

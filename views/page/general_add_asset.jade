@@ -1,0 +1,100 @@
+extends  ../durable_general_layout
+
+block scripts
+    script(src="/javascripts/general_add_asset.js")
+block content
+    br
+    .panel.panel-primary
+        .panel-heading
+            h3.panel-title
+                i.glyphicon.glyphicon-user
+                | &nbsp; เพิ่มรายการครุภัณฑ์ทั่วไป
+        .panel-body
+            .row
+                .col-md-3
+                    .form-group
+                        label วันที่รับ
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        #datetimepicker1.input-group(data-datepicker)
+                            input#txtDate_receive.form-control(type='text')
+                            span.input-group-addon
+                                span.glyphicon.glyphicon-calendar
+                .col-md-6
+                    .form-group
+                        label(for="SlType") ประเภท
+                        select#SlType.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for c in data.types
+                                option(value="#{c.id}") #{c.name}
+            .row
+                .col-md-6
+                    .form-group
+                        label(for="SlItems") รายการครุภัณฑ์
+                        select#SlItems.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for d in data.items
+                                option(value="#{d.id}") #{d.name}
+                .col-md-4#divItems_code
+                    .form-group
+                        label(for="txtItems_code") รหัส
+                        input#txtItems_code.form-control
+                .col-md-2
+                    .form-group
+                        label(for="txtPieces") ชิ้น
+                        input(type="number",name="pieces",placeholder="/")#txtPieces.form-control
+            .row
+                .col-md-8
+                    .form-group
+                        label(for="txtSpec") Spec
+                        textarea#txtSpec(type="text" ,rows="3" ,placeholder="Spec").form-control
+            .row
+                .col-md-3
+                    .form-group
+                        label(for="txtPrice") ราคา/หน่วย
+                        input(type="number",name="price",placeholder="ราคา")#txtPrice.form-control
+                .col-md-5
+                    .form-group
+                        label(for="SlCompany") ซื้อจาก
+                        select#SlCompany.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for h in data.companys
+                                option(value="#{h.id}") #{h.shop}
+                .col-md-4
+                    .form-group
+                        label(for="SlWheremoney") วิธีการได้มา
+                        select#SlWheremoney.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for g in data.moneys
+                                option(value="#{g.id}") #{g.provide}
+            .row
+                .col-md-5
+                    .form-group
+                        label(for="txtOrder_no") เลขที่เอกสารใบสั่งซื้อ
+                        input(type="text",name="order_no",placeholder="เลขที่ใบสั่งซื้อ")#txtOrder_no.form-control
+                .col-md-4
+                    .form-group
+                        label(for="SlRoom") ใช้ประจำที่
+                        select#SlRoom.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for i in data.rooms
+                                option(value="#{i.id}") #{i.name}
+                .col-md-3
+                    .form-group
+                        label(for="SlStatus") สถานะครุภัณฑ์
+                        select#SlStatus.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for j in data.status
+                                option(value="#{j.id}") #{j.name}
+            .row
+                .col-md-5
+                    .form-group
+                        label(for="txtChange_room") ย้ายครุภัณฑ์ไปยังห้อง
+                        select#SlChange_room.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for k in data.rooms
+                                option(value="#{k.id}") #{k.name}
+                .col-md-7
+                    .form-group
+                        label(for="txtRemark") หมายเหตุ
+                        input(type="text",name="txtRemark",placeholder="หมายเหตุ")#txtRemark.form-control
+            button.btn.btn-primary(type="button")#btnSave บันทึก

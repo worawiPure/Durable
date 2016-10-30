@@ -1,0 +1,1 @@
+UPDATE items_general set code = concat(SUBSTR(code,1,4),"-",substr(code,5,3),"-",substr(code,8,4)) 

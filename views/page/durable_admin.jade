@@ -1,0 +1,68 @@
+extends  ../durable_menu_layout
+block scripts
+    script(src="")
+block content
+    .container
+        .row
+            .col-md-4
+                br
+                .panel.panel-success
+                    .panel-heading
+                        h3.panel-title
+                            i.fa.fa-tags
+                            | &nbsp; ครุภัณฑ์ทั่วไป
+                    .panel-body
+                        .ul.nav.nav-pills.nav-stacked
+                            if session.level_user_id==2
+                                li
+                                    a(href="/general_add_asset/general_add_asset")
+                                        i.fa.fa-book
+                                        | &nbsp; บันทึกครุภัณฑ์ทั่วไป
+                                li
+                                    a(href="/general_add_asset/show_detail")
+                                        i.fa.fa-book
+                                        | &nbsp; รายการครุภัณฑ์ทั่วไป
+                                li
+                                    a(href="#")
+
+            .col-md-4
+                br
+                .panel
+                    .panel-heading(style="background-color:#ffd700")
+                        h3.panel-title
+                            i.fa.fa-tags
+                            | &nbsp; ครุภัณฑ์ทางการแพทย์
+                    .panel-body
+                        .ul.nav.nav-pills.nav-stacked
+                            if session.level_user_id==2
+                                li
+                                    a(href="/medical_add_asset/medical_add_asset")
+                                        i.fa.fa-file-text
+                                        | &nbsp; บันทึกครุภัณฑ์ทางการแพทย์
+                                li
+                                    a(href="/medical_add_asset/show_detail")
+                                        i.fa.fa-file-text
+                                        | &nbsp; รายการครุภัณฑ์ทางการแพทย์
+                                li
+                                    a(href="#")
+
+            .col-md-4
+                br
+                .panel.panel-danger
+                    .panel-heading
+                        h3.panel-title
+                            i.fa.fa-tags
+                            | &nbsp; รายงาน
+                    .panel-body
+                        .ul.nav.nav-pills.nav-stacked
+                            if session.level_user_id==2
+                                li
+                                    a(href="/general_add_asset/report_general_depreciate")
+                                        i.glyphicon.glyphicon-play
+                                        | &nbsp; ค่าเสื่อมครุภัณฑ์ทั่วไป
+                                li
+                                    a(href="/medical_add_asset/report_medical_depreciate")
+                                        i.glyphicon.glyphicon-play
+                                        | &nbsp; ค่าเสื่อมครุภัณฑ์ทางการแพทย์
+                                li
+                                    a(href="#")

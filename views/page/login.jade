@@ -1,0 +1,26 @@
+extends ../durable_login_layout
+block content
+    Br
+
+    .panel.panel-primary
+        .panel-heading
+            h3.panel-title
+                i.glyphicon.glyphicon-user
+                | &nbsp; กรุณา Login
+        .panel-body
+            if error
+                .alert.alert-danger.alert-dismissable(role="alert")
+                    button(type="button",data-dismiss="alert",aria-label="Close").close
+                        span(aria-hidden="true")
+                    p Username/Password ไม่ถูกต้อง || รอการยืนยันผู้ใช้งาน
+            form(action="/users/login",method="POST")
+                .form-group
+                    label(for="txtUsername") ชื่อผู้ใช้
+                    input(type="text",name="username",placeholder="ชื่อผู้ใช้งาน")#txtUsername.form-control
+
+                .form-group
+                    label(for="txtPassword") รหัสผ่าน
+                    input(type="password",name="password",placeholder="รหัสผ่าน")#txtPassword.form-control
+
+                button.btn.btn-primary(type="submit") Login เข้าระบบ
+                //a.login_register_btn.btn.btn-link(href="/users/register") สมัครเข้าใช้ระบบ

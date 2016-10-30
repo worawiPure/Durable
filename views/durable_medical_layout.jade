@@ -1,0 +1,151 @@
+doctype html
+html
+  head
+        title โปรแกรมครุภัณฑ์ verion 0.0.1
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        link(rel="stylesheet", href="/libs/bootstrap/dist/css/bootstrap.min.css")
+        link(rel="stylesheet", href="/libs/font-awesome/css/font-awesome.min.css")
+        link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/material.min.css")
+        link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/ripples.min.css")
+        link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/roboto.min.css")
+        link(rel="stylesheet", href="/libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css")
+        link(rel="stylesheet", href="/stylesheets/style.css")
+        link(rel="stylesheet", href="/libs/nprogress/nprogress.css")
+        script(src="/libs/jquery/dist/jquery.min.js")
+        script(src="/libs/bootstrap/dist/js/bootstrap.min.js")
+        script(src="/libs/bootstrap-material-design/dist/js/material.min.js")
+        script(src="/libs/bootstrap-material-design/dist/js/ripples.min.js")
+        script(src="/libs/paging/jquery.paging.min.js")
+        script(src="/javascripts/app.js")
+        script(src="/libs/nprogress/nprogress.js")
+        script(src="/libs/lodash/lodash.min.js")
+        script(src="/libs/moment/min/moment-with-locales.js")
+        script(src="/libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js")
+        script(src="/libs/highcharts/highcharts.js")
+        script(src="/libs/highchartTable/jquery.highchartTable.js")
+
+        script.
+            $(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+                $('input[readonly]').css('background-color', 'white');
+                $('input[disabled="disabled"]').css('background-color', 'white');
+                $('[data-datepicker]').datetimepicker({
+                    locale: 'th',
+                    format: 'DD/MM/YYYY'
+                });
+                $('[data-timepicker]').datetimepicker({
+                    format: 'HH:mm'
+                });
+                })
+            $(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+                $('input[readonly]').css('background-color', 'white');
+                $('input[disabled="disabled"]').css('background-color', 'white');
+            })
+        block scripts
+  body
+        nav.navbar.navbar-primary.navbar-fixed-top
+              .container
+                    .navbar-header
+                          button(type="button", data-toggle="collapse", data-taget="#navbar",
+                          aria-expanded="false", aria-controls="navbar").navbar-toggle.collapsed
+                                span.sr-only Toggle navigation
+                                span.icon-bar
+                                span.icon-bar
+                          a.navbar-brand(href="#")
+                                img.img-circle(src="/images/hos_logo.png", height="41")
+                          a.navbar-brand(href="#")
+                                | &nbsp; โปรแกรมครุภัณฑ์
+                    #navbar.navbar-collapse.collapse
+                          ul.nav.navbar-nav
+                                li.active
+                                    a(href="/") หน้าแรก
+                          p.navbar-text.navbar-right #{session.fullname}
+                          ul.nav.navbar-nav.pull-right
+                                li.dropdown
+                                      a(href="#", data-toggle="dropdown", role="button",
+                                      aria-haspopup="true", aria-expanded="false").dropdown-toggle
+                                        i.fa.fa-user
+                                      ul.dropdown-menu
+                                            li
+                                                  a(href="#")
+                                                        i.fa.fa-edit
+                                                        | &nbsp;&nbsp; ข้อมูลส่วนตัว
+                                            li
+                                                  a(href="/users/logout")
+                                                        i.fa.fa-power-off
+                                                        | &nbsp;&nbsp;ออกจากระบบ
+        .container
+              .row
+                    .col-md-3
+                          br
+                          #accordion.panel-group(role='tablist', aria-multiselectable='true')
+                              .panel.panel-primary
+                                  #headingOne.panel-heading(role='tab')
+                                      // .ul.nav.nav-pills.nav-stacked
+                                      if session.level_user_id==2
+                                          li.active
+                                              h4.panel-title
+                                                a(style="color:white", role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseOne', aria-expanded='true', aria-controls='collapseOne')
+                                                    i.fa.fa-cogs
+                                                    | &nbsp; หมวดครุภัณฑ์การแพทย์
+                                  #collapseOne.panel-collapse.collapse.in(role='tabpanel', aria-labelledby='headingOne')
+                                      .panel-body
+                                         .ul.nav.nav-pills.nav-stacked
+                                              if session.level_user_id==2
+                                                  li
+                                                    a(href="/medical_add_asset/medical_add_asset")
+                                                        i.glyphicon.glyphicon-save
+                                                        | &nbsp; บันทึกครุภัณฑ์การแพทย์
+                                                  li
+                                                      a(href="/medical_add_asset/show_detail")
+                                                          i.glyphicon.glyphicon-tasks
+                                                          | &nbsp; รายการครุภัณฑ์การแพทย์
+                                      #accordion3.panel-group(role='tablist', aria-multiselectable='true')
+                                          .panel.panel-primary
+                                              #headingthree.panel-heading(role='tab')
+                                                  li
+                                                      a(style="color:white", role='button', data-toggle='collapse', data-parent='#accordion3', href='#collapsethree', aria-expanded='true', aria-controls='collapsethree')
+                                                          i.glyphicon.glyphicon-list-alt
+                                                          | &nbsp; รายงานครุภัณฑ์การแพทย์
+                                              #collapsethree.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingthree')
+                                                  .panel-body
+                                                      .ul.nav.nav-pills.nav-stacked
+                                                          li
+                                                              a(href="/medical_add_asset/report_medical_depreciate")
+                                                                  i.fa.fa-file-text-o
+                                                                  | &nbsp; ค่าเสื่อมครุภัณฑ์ทางการแพทย์
+                                          #accordion2.panel-group(role='tablist', aria-multiselectable='true')
+                                              .panel.panel-primary
+                                                      #headingtwo.panel-heading(role='tab')
+                                                          li.active
+                                                                a(style="color:white", role='button', data-toggle='collapse', data-parent='#accordion2', href='#collapsetwo', aria-expanded='true', aria-controls='collapsetwo')
+                                                                    i.fa.fa-cogs
+                                                                    | &nbsp; จัดการระบบครุภัณฑ์การแพทย์
+                                                      #collapsetwo.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingtwo')
+                                                            .panel-body
+                                                                .ul.nav.nav-pills.nav-stacked
+                                                                    li
+                                                                        a(href="/durable_medical/durable_type")
+                                                                            i.glyphicon.glyphicon-play
+                                                                            | &nbsp; จัดการประเภทครุภัณฑ์
+                                                                    li
+                                                                        a(href="/durable_medical/durable_items")
+                                                                            i.glyphicon.glyphicon-play
+                                                                            | &nbsp; จัดการรายการครุภัณฑ์
+                                                                    li
+                                                                        a(href="/durable_medical/company")
+                                                                            i.glyphicon.glyphicon-play
+                                                                            | &nbsp; จัดการบริษัท
+                                                                    //li
+                                                                          a(href="/durable_admin/department")
+                                                                              i.glyphicon.glyphicon-play
+                                                                              | &nbsp; จัดการแผนก
+                                                                    li
+                                                                        a(href="/durable_medical/room")
+                                                                            i.glyphicon.glyphicon-play
+                                                                            | &nbsp; จัดการห้อง
+                    .col-md-9
+                        block content
