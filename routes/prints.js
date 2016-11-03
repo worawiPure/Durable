@@ -1,8 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var json2xls = require('json2xls');
 var _ = require('lodash');
 var Q = require('q');
 var fs = require('fs');
+var path = require('path');
 var numeral = require('numeral');
 var pdf = require('html-pdf');
 var moment = require('moment');
@@ -1671,6 +1673,929 @@ router.get('/medical_depreciate/:id', function (req,res,next) {
         });
 
     // ensure directory
+});
+
+router.get('/export_general_items/:items_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _items = {};
+    var items_export = req.params.items_export;
+    report_general.report_durable_items_price_total(db,items_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items.getListItems_print(db,items_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _items.detail = rows[0];
+            return report_general.export_durable_items(db,items_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_items_general-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_general_type/:type_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _type = {};
+    var type_export = req.params.type_export;
+    report_general.report_durable_type_price_total(db,type_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items.getListType_print(db,type_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _type.detail = rows[0];
+            return report_general.export_durable_type(db,type_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_type_general-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_general_room/:room_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _room = {};
+    var room_export = req.params.room_export;
+    report_general.report_durable_room_price_total(db,room_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items.getListRoom_print(db,room_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _room.detail = rows[0];
+            return report_general.export_durable_room(db,room_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_room_general-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_medical_items/:items_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _items = {};
+    var items_export = req.params.items_export;
+    report_medical.report_durable_items_price_total(db,items_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items2.getListItems_print(db,items_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _items.detail = rows[0];
+            return report_medical.export_durable_items(db,items_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_items_medical-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_medical_type/:type_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _type = {};
+    var type_export = req.params.type_export;
+    report_medical.report_durable_type_price_total(db,type_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items2.getListType_print(db,type_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _type.detail = rows[0];
+            return report_medical.export_durable_type(db,type_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_type_medical-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_medical_room/:room_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _room = {};
+    var room_export = req.params.room_export;
+    report_medical.report_durable_room_price_total(db,room_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items2.getListRoom_print(db,room_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _room.detail = rows[0];
+            return report_medical.export_durable_room(db,room_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_room_medical-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_depreciate_type_general/:type_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _type = {};
+    var type_export = req.params.type_export;
+    report_general.report_durable_type_price_total(db,type_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items.getListType_print(db,type_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _type.detail = rows[0];
+            return report_general.report_depreciate_export_type(db,type_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_depreciate_general_type-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name',
+                'cnt_year','cnt_month','cnt_day','price','depreciate','sum_depreciate2','residual_value2']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_depreciate_items_general/:items_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _items = {};
+    var items_export = req.params.items_export;
+    report_general.report_durable_type_price_total(db,items_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items.getListType_print(db,items_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _items.detail = rows[0];
+            return report_general.report_depreciate_export_items(db,items_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_depreciate_general_items-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name',
+                'cnt_year','cnt_month','cnt_day','price','depreciate','sum_depreciate2','residual_value2']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_depreciate_room_general/:room_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _room = {};
+    var room_export = req.params.room_export;
+    report_general.report_durable_type_price_total(db,room_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items.getListType_print(db,room_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _room.detail = rows[0];
+            return report_general.report_depreciate_export_room(db,room_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_depreciate_general_room-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name',
+                'cnt_year','cnt_month','cnt_day','price','depreciate','sum_depreciate2','residual_value2']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_depreciate_type_medical/:type_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _type = {};
+    var type_export = req.params.type_export;
+    report_medical.report_durable_type_price_total(db,type_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items2.getListType_print(db,type_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _type.detail = rows[0];
+            return report_medical.report_depreciate_export_type(db,type_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_depreciate_medical_type-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name',
+                'cnt_year','cnt_month','cnt_day','price','depreciate','sum_depreciate2','residual_value2']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_depreciate_items_medical/:items_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _items = {};
+    var items_export = req.params.items_export;
+    report_medical.report_durable_type_price_total(db,items_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items2.getListType_print(db,items_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _items.detail = rows[0];
+            return report_medical.report_depreciate_export_items(db,items_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_depreciate_medical_items-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name',
+                'cnt_year','cnt_month','cnt_day','price','depreciate','sum_depreciate2','residual_value2']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_depreciate_room_medical/:room_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _room = {};
+    var room_export = req.params.room_export;
+    report_medical.report_durable_type_price_total(db,room_export)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items2.getListType_print(db,room_export)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _room.detail = rows[0];
+            return report_medical.report_depreciate_export_room(db,room_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_depreciate_medical_room-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name',
+                'cnt_year','cnt_month','cnt_day','price','depreciate','sum_depreciate2','residual_value2']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
 });
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 router.get('/pdf', function(req, res, next) {

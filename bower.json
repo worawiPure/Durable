@@ -16,6 +16,7 @@
     "moment": "~2.10.6",
     "bootstrap-material-design": "~0.3.0",
     "paging": "~1.2.0",
-    "numeral": "~1.5.3"
+    "numeral": "~1.5.3",
+    "js-xlsx": "~0.8.0"
   }
 }

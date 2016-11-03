@@ -85,18 +85,18 @@ app.use(function(req, res, next) {
 
 // development error handler
 //// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+//if (app.get('env') === 'development') {
+//  app.use(function(err, req, res, next) {
     //res.status(err.status || 500);
-    console.log(err)
-  });
-}
+//    console.log(err)
+//  });
+//}
 //
 //// production error handler
 //// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  console.log(err)
-});
+//app.use(function(err, req, res, next) {
+//  console.log(err)
+//});
 
 
 module.exports = app;

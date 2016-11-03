@@ -28,6 +28,9 @@ $(function() {
     $('#btnPrint_items').fadeOut('slow');
     $('#btnPrint_type').fadeOut('slow');
     $('#btnPrint_room').fadeOut('slow');
+    $('#btnExport_type_excel').fadeOut('slow');
+    $('#btnExport_items_excel').fadeOut('slow');
+    $('#btnExport_room_excel').fadeOut('slow');
 
     $('#btnSearch_items').on('click', function(e){
         e.preventDefault();
@@ -51,6 +54,9 @@ $(function() {
                     $('#btnPrint_items').fadeIn('slow');
                     $('#btnPrint_type').fadeOut('slow');
                     $('#btnPrint_room').fadeOut('slow');
+                    $('#btnExport_type_excel').fadeOut('slow');
+                    $('#btnExport_items_excel').fadeIn('slow');
+                    $('#btnExport_room_excel').fadeOut('slow');
                     $('#slType').val('');
                     $('#slRoom').val('');
                 })
@@ -80,8 +86,11 @@ $(function() {
                     setTable(data);
                     NProgress.done();
                     $('#btnPrint_type').fadeIn('slow');
+                    $('#btnExport_type_excel').fadeIn('slow');
                     $('#btnPrint_items').fadeOut('slow');
                     $('#btnPrint_room').fadeOut('slow');
+                    $('#btnExport_items_excel').fadeOut('slow');
+                    $('#btnExport_room_excel').fadeOut('slow');
                     $('#slItems').val('');
                     $('#slRoom').val('');
                 })
@@ -111,8 +120,11 @@ $(function() {
                     setTable(data);
                     NProgress.done();
                     $('#btnPrint_room').fadeIn('slow');
+                    $('#btnExport_room_excel').fadeIn('slow');
                     $('#btnPrint_items').fadeOut('slow');
                     $('#btnPrint_type').fadeOut('slow');
+                    $('#btnExport_type_excel').fadeOut('slow');
+                    $('#btnExport_items_excel').fadeOut('slow');
                     $('#slItems').val('');
                     $('#slType').val('');
                 })
@@ -138,6 +150,24 @@ $(function() {
         e.preventDefault();
         var room_print = $('#slRoom').val();
         window.open('/prints/report_medical_depreciate_room/'+room_print)
+    });
+
+    $('#btnExport_type_excel').on('click', function(e){
+        e.preventDefault();
+        var type_export = $('#slType').val();
+        window.open('/prints/export_depreciate_type_medical/'+type_export)
+    });
+
+    $('#btnExport_items_excel').on('click', function(e){
+        e.preventDefault();
+        var items_export = $('#slItems').val();
+        window.open('/prints/export_depreciate_items_medical/'+items_export)
+    });
+
+    $('#btnExport_room_excel').on('click', function(e){
+        e.preventDefault();
+        var room_export = $('#slRoom').val();
+        window.open('/prints/export_depreciate_room_medical/'+room_export)
     });
 
 });

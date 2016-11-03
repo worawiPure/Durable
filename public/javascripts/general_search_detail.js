@@ -101,6 +101,10 @@ $(function() {
     $('#btnPrint_items').fadeOut('slow');
     $('#btnPrint_type').fadeOut('slow');
     $('#btnPrint_room').fadeOut('slow');
+    $('#btnExport_items_excel').fadeOut('slow');
+    $('#btnExport_type_excel').fadeOut('slow');
+    $('#btnExport_room_excel').fadeOut('slow');
+
 
     $('#btnSearch_items').on('click', function(e){
         e.preventDefault();
@@ -122,8 +126,11 @@ $(function() {
                     setTable(data);
                     NProgress.done();
                     $('#btnPrint_items').fadeIn('slow');
+                    $('#btnExport_items_excel').fadeIn('slow');
                     $('#btnPrint_type').fadeOut('slow');
                     $('#btnPrint_room').fadeOut('slow');
+                    $('#btnExport_type_excel').fadeOut('slow');
+                    $('#btnExport_room_excel').fadeOut('slow');
                     $('#slType').val('');
                     $('#slRoom').val('');
                 })
@@ -155,6 +162,9 @@ $(function() {
                     $('#btnPrint_type').fadeIn('slow');
                     $('#btnPrint_items').fadeOut('slow');
                     $('#btnPrint_room').fadeOut('slow');
+                    $('#btnExport_items_excel').fadeOut('slow');
+                    $('#btnExport_type_excel').fadeIn('slow');
+                    $('#btnExport_room_excel').fadeOut('slow');
                     $('#slItems').val('');
                     $('#slRoom').val('');
                 })
@@ -186,6 +196,9 @@ $(function() {
                     $('#btnPrint_room').fadeIn('slow');
                     $('#btnPrint_items').fadeOut('slow');
                     $('#btnPrint_type').fadeOut('slow');
+                    $('#btnExport_items_excel').fadeOut('slow');
+                    $('#btnExport_type_excel').fadeOut('slow');
+                    $('#btnExport_room_excel').fadeIn('slow');
                     $('#slItems').val('');
                     $('#slType').val('');
                 })
@@ -211,6 +224,24 @@ $(function() {
         e.preventDefault();
         var room_print = $('#slRoom').val();
         window.open('/prints/report_general_room/'+room_print)
+    });
+
+    $('#btnExport_items_excel').on('click', function(e){
+        e.preventDefault();
+        var items_export = $('#slItems').val();
+        window.open('/prints/export_general_items/'+items_export)
+    });
+
+    $('#btnExport_type_excel').on('click', function(e){
+        e.preventDefault();
+        var type_export = $('#slType').val();
+        window.open('/prints/export_general_type/'+type_export)
+    });
+
+    $('#btnExport_room_excel').on('click', function(e){
+        e.preventDefault();
+        var room_export = $('#slRoom').val();
+        window.open('/prints/export_general_room/'+room_export)
     });
 
     $(document).on('click','a[data-action="remove"]', function(e){
