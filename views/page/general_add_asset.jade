@@ -31,9 +31,6 @@ block content
                     .form-group
                         label(for="SlItems") รายการครุภัณฑ์
                         select#SlItems.form-control
-                            option(value="") กรุณาเลือกรายการ....
-                            for d in data.items
-                                option(value="#{d.id}") #{d.name}
                 .col-md-4#divItems_code
                     .form-group
                         label(for="txtItems_code") รหัส
@@ -56,9 +53,6 @@ block content
                     .form-group
                         label(for="SlCompany") ซื้อจาก
                         select#SlCompany.form-control
-                            option(value="") กรุณาเลือกรายการ....
-                            for h in data.companys
-                                option(value="#{h.id}") #{h.shop}
                 .col-md-4
                     .form-group
                         label(for="SlWheremoney") วิธีการได้มา

@@ -25,12 +25,7 @@ router.get('/general_add_asset', function(req,res){
     if (req.session.level_user_id != 2){
         res.render('./page/access_denied')
     } else {
-        items.getListItems(db)
-            .then(function(rows){
-                console.log(rows);
-                data.items = rows;
-                return type.getListType(db);
-            })
+         type.getListType(db)
             .then(function(rows){
                 console.log(rows);
                 data.types =rows;
@@ -39,11 +34,6 @@ router.get('/general_add_asset', function(req,res){
             .then(function(rows) {
                 console.log(rows);
                 data.moneys = rows;
-                return company.getListCompany(db);
-            })
-            .then(function(rows) {
-                console.log(rows);
-                data.companys = rows;
                 return room.getListRoom(db);
             })
             .then(function(rows) {
@@ -59,7 +49,7 @@ router.get('/general_add_asset', function(req,res){
                 console.log(err);
                 res.render('./page/general_add_asset', {
                     data: {
-                        items:[], types:[], moneys:[], companys:[],rooms:[],status:[]
+                         types:[], moneys:[],rooms:[],status:[]
                     }
                 });
             });
@@ -112,11 +102,7 @@ router.get('/show_detail', function(req,res){
     if (req.session.level_user_id != 2){
         res.render('./page/access_denied')
     } else {
-          items.getListItems(db)
-                .then(function(rows){
-                    data.items = rows;
-                    return room.getListRoom(db);
-                })
+          room.getListRoom(db)
                 .then(function(rows){
                     data.rooms = rows;
                     return type.getListType(db);
@@ -127,7 +113,7 @@ router.get('/show_detail', function(req,res){
                 }, function (err) {
                     console.log(err);
                     res.render('./page/general_search_detail', {
-                        data: {items:[], types:[] ,rooms:[]}
+                        data: { types:[] ,rooms:[]}
                     });
                 });
     }
@@ -268,11 +254,7 @@ router.get('/report_general_depreciate', function(req,res){
     if (req.session.level_user_id != 2){
         res.render('./page/access_denied')
     } else {
-        items.getListItems(db)
-            .then(function(rows){
-                data.items = rows;
-                return room.getListRoom(db);
-            })
+         room.getListRoom(db)
             .then(function(rows){
                 data.rooms = rows;
                 return type.getListType(db);
@@ -283,7 +265,7 @@ router.get('/report_general_depreciate', function(req,res){
             }, function (err) {
                 console.log(err);
                 res.render('./page/general_search_depreciate', {
-                    data: {items:[], types:[] ,rooms:[]}
+                    data: {types:[] ,rooms:[]}
                 });
             });
     }
@@ -480,6 +462,53 @@ router.post('/report_depreciate_search_room',function(req,res){
             res.send({ok:false,msg:err})
         })
 });
+
+router.get('/select2_items', function(req,res){
+    var db = req.db;
+    var data = {};
+    data.term = req.query.term;
+    data.page = req.query.page;
+    if (req.session.level_user_id != 2){
+        res.render('./page/access_denied')
+    } else {
+        var _items;
+        items.getListItems_select2(db,data)
+            .then(function (rows) {
+                _items = rows;
+                return items.getCount_items_select2(db,data)
+            })
+            .then(function(total){
+                res.send({ok:true,items:_items,total:total});
+            }, function (err) {
+                console.log(err);
+                res.send({ok:false,msg:err})
+                });
+    }
+});
+
+router.get('/select2_company', function(req,res){
+    var db = req.db;
+    var data = {};
+    data.term = req.query.term;
+    data.page = req.query.page;
+    if (req.session.level_user_id != 2){
+        res.render('./page/access_denied')
+    } else {
+        var _company;
+        company.getListCompany_select2(db,data)
+            .then(function (rows) {
+                _company = rows;
+                return company.getCount_company_select2(db,data)
+            })
+            .then(function(total){
+                res.send({ok:true,company:_company,total:total});
+            }, function (err) {
+                console.log(err);
+                res.send({ok:false,msg:err})
+            });
+    }
+});
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

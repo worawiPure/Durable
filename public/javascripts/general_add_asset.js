@@ -1,40 +1,42 @@
 $(function() {
 
+
     $('#divItems_code').fadeOut();
-    $('#SlItems').on('change', function (e) {
-        $('#txtItems_code').val('');
+    //$('#SlItems').on('change', function (e) {
+      //  $('#txtItems_code').val('');
         //   console.log($(this).val());
-        var id = $(this).val();
-        if (id) {
-            $.ajax({
-                url: '/general_add_asset/code_items',
-                method: 'POST',
-                data: {id: id}
-            })
-                .success(function (data) {
-                    var $text_code = $('#txtItems_code');
-                    $text_code.empty();
-                    _.forEach(data.rows, function (v) {
-                    $text_code.val(v.code);
-                    });
-                    $('#divItems_code').fadeIn();
-                })
-                .error(function (xhr, status, err) {
-                })
-        } else {
-            alert('กรุณาเลือกรายการครุภัณฑ์');
-        }
-    });
+       // var id = $(this).val();
+       // if (id) {
+         //   $.ajax({
+           //     url: '/general_add_asset/code_items',
+            //    method: 'POST',
+             //   data: {id: id}
+           // })
+             //   .success(function (data) {
+               //     var $text_code = $('#txtItems_code');
+                 //   $text_code.empty();
+                 //   _.forEach(data.rows, function (v) {
+                 //   $text_code.val(v.code);
+                 //   });
+                  //  $('#divItems_code').fadeIn();
+                //})
+                //.error(function (xhr, status, err) {
+                //})
+        //} else {
+          //  alert('กรุณาเลือกรายการครุภัณฑ์');
+        //}
+    //});
 
     $('#btnSave').on('click', function(e){
         var data = {};
+        var data_company = $("#SlCompany").select2('data');
         data.receive_date = $('#txtDate_receive').val();
         data.durable_type= $('#SlType').val();
         data.durable_items = $('#SlItems').val();
         data.pieces = $('#txtPieces').val();
         data.spec = $('#txtSpec').val();
         data.price = $('#txtPrice').val();
-        data.company= $('#SlCompany').val();
+        data.company= data_company[0].id;
         data.wheremoney = $('#SlWheremoney').val();
         data.order_no = $('#txtOrder_no').val();
         data.room = $('#SlRoom').val();
@@ -84,5 +86,93 @@ $(function() {
                     alert(err);
                 })
         }}
-    })
+    });
+
+    $("#SlItems").select2({
+        ajax: {
+            url: "/general_add_asset/select2_items",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    term: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data, page) {
+                var myResults = [];
+                $.each(data.items, function (i, v) {
+                    myResults.push({
+                        id: v.id,
+                        text: v.name,
+                        code: v.code
+                    });
+                    console.log(myResults);
+                });
+                return {
+                    results: myResults,
+                    pagination: {
+                        more: (page * 30) < data.total
+                    }
+                };
+            }
+        }});
+
+
+
+    $("#SlItems").on("change", function (e) {
+        $('#txtItems_code').val('');
+        //console.log($("#sl2").select2('data'));
+        var data = $("#SlItems").select2('data');
+        console.log(data[0]);
+        var id = data[0].id;
+        if (id) {
+            $.ajax({
+                url: '/general_add_asset/code_items',
+                method: 'POST',
+                data: {id: id}
+            })
+                .success(function (data) {
+                    var $text_code = $('#txtItems_code');
+                    $text_code.empty();
+                    _.forEach(data.rows, function (v) {
+                        $text_code.val(v.code);
+                    });
+                    $('#divItems_code').fadeIn();
+                })
+                .error(function (xhr, status, err) {
+                })
+        } else {
+            alert('กรุณาเลือกรายการครุภัณฑ์');
+        }
+    });
+
+    $("#SlCompany").select2({
+        ajax: {
+            url: "/general_add_asset/select2_company",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    term: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data, page) {
+                var myResults = [];
+                $.each(data.company, function (i, v) {
+                    myResults.push({
+                        id: v.id,
+                        text: v.shop
+                    });
+                    console.log(myResults);
+                });
+                return {
+                    results: myResults,
+                    pagination: {
+                        more: (page * 30) < data.total
+                    }
+                };
+            }
+        }});
 });

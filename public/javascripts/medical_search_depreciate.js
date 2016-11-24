@@ -35,7 +35,9 @@ $(function() {
     $('#btnSearch_items').on('click', function(e){
         e.preventDefault();
         var data = {};
-        var items = $('#slItems').val();
+        //var items = $('#slItems').val();
+        var data_items = $("#SlItems").select2('data');
+        var items = data_items[0].id;
         data.items = items;
         if(!data.items) {
             alert('กรุณาเลือกรายการด้วยครับ!!')
@@ -91,7 +93,7 @@ $(function() {
                     $('#btnPrint_room').fadeOut('slow');
                     $('#btnExport_items_excel').fadeOut('slow');
                     $('#btnExport_room_excel').fadeOut('slow');
-                    $('#slItems').val('');
+                    $("#SlItems").val('').trigger('change');
                     $('#slRoom').val('');
                 })
                 .error(function (xhr, status, err) {
@@ -125,7 +127,7 @@ $(function() {
                     $('#btnPrint_type').fadeOut('slow');
                     $('#btnExport_type_excel').fadeOut('slow');
                     $('#btnExport_items_excel').fadeOut('slow');
-                    $('#slItems').val('');
+                    $("#SlItems").val('').trigger('change');;
                     $('#slType').val('');
                 })
                 .error(function (xhr, status, err) {
@@ -136,7 +138,9 @@ $(function() {
 
     $('#btnPrint_items').on('click', function(e){
         e.preventDefault();
-        var items_print = $('#slItems').val();
+        //var items_print = $('#slItems').val();
+        var data_items = $("#SlItems").select2('data');
+        var items_print = data_items[0].id;
         window.open('/prints/report_medical_depreciate_items/'+items_print)
     });
 
@@ -160,7 +164,9 @@ $(function() {
 
     $('#btnExport_items_excel').on('click', function(e){
         e.preventDefault();
-        var items_export = $('#slItems').val();
+        //var items_export = $('#slItems').val();
+        var data_items = $("#SlItems").select2('data');
+        var items_export = data_items[0].id;
         window.open('/prints/export_depreciate_items_medical/'+items_export)
     });
 
@@ -169,5 +175,35 @@ $(function() {
         var room_export = $('#slRoom').val();
         window.open('/prints/export_depreciate_room_medical/'+room_export)
     });
+
+    $("#SlItems").select2({
+        ajax: {
+            url: "/medical_add_asset/select2_items",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    term: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data, page) {
+                var myResults = [];
+                $.each(data.items, function (i, v) {
+                    myResults.push({
+                        id: v.id,
+                        text: v.name,
+                        code: v.code
+                    });
+                    console.log(myResults);
+                });
+                return {
+                    results: myResults,
+                    pagination: {
+                        more: (page * 30) < data.total
+                    }
+                };
+            }
+        }});
 
 });

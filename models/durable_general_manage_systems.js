@@ -2,6 +2,39 @@ var Q = require('q');
 
 module.exports = {
 
+    getListCompany_select2: function(db,data) {
+        var q = Q.defer();
+        var w = '%'+data.term+'%';
+        db('general_company')
+            .select()
+            .where('shop', 'like', w)
+            .orderBy('shop', 'ASC')
+            .limit(30)
+            .offset(data.page)
+            .then(function (rows) {
+                q.resolve(rows);
+            })
+            .catch(function (err) {
+                q.reject(err);
+            });
+        return q.promise;
+    },
+
+    getCount_company_select2: function (db,data) {
+        var q = Q.defer();
+        var w = '%'+data.term+'%';
+        db('general_company')
+            .where('shop','like',w)
+            .count('* as total')
+            .then(function (rows) {
+                q.resolve(rows[0].total)
+            })
+            .catch(function (err) {
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
   getListCompany: function(db){
       var q = Q.defer();
       db('general_company')
@@ -405,7 +438,40 @@ module.exports = {
 },
 /////////////////////////////////////////////////////////////////////////////// End Category ///////////////////////////
 
-  getListItems: function(db){
+    getListItems_select2: function(db,data) {
+        var q = Q.defer();
+        var w = '%'+data.term+'%';
+        db('general_items')
+            .select()
+            .where('name', 'like', w)
+            .orderBy('name', 'ASC')
+            .limit(30)
+            .offset(data.page)
+            .then(function (rows) {
+                q.resolve(rows);
+            })
+            .catch(function (err) {
+                q.reject(err);
+            });
+        return q.promise;
+    },
+
+    getCount_items_select2: function (db,data) {
+        var q = Q.defer();
+        var w = '%'+data.term+'%';
+        db('general_items')
+            .where('name','like',w)
+            .count('* as total')
+            .then(function (rows) {
+                q.resolve(rows[0].total)
+            })
+            .catch(function (err) {
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
+    getListItems: function(db){
       var q = Q.defer();
             db('general_items')
                 .select()
