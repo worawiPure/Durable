@@ -9,10 +9,11 @@ $(function() {
                 '<td> ' + i + ' </td>'+
                 '<td> ' + moment(v.receive_date_thai).format('YYYY-MM-DD') +' </td>'+
                 '<td>' + v.items_code  + ' </td>'+
-                '<td>' + v.type_name  + ' </td>'+
+                //'<td>' + v.type_name  + ' </td>'+
                 '<td>' + v.durable_name  + ' </td>'+
+                '<td>' + v.spec  + ' </td>'+
                 '<td>' + v.price  + ' </td>'+
-                '<td>' + v.provide  + ' </td>'+
+                //'<td>' + v.provide  + ' </td>'+
                 '<td>' + v.room_name   + ' </td>'+
                 '<td><font color="red">' + v.remark + '</font></td>'+
                 '<td> '+

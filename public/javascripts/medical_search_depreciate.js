@@ -9,8 +9,9 @@ $(function() {
                 '<td> ' + i + ' </td>'+
                 '<td> ' + v.receive_date +' </td>'+
                 '<td>' + v.items_code  + ' </td>'+
-                '<td>' + v.type_name  + ' </td>'+
+                //'<td>' + v.type_name  + ' </td>'+
                 '<td>' + v.durable_name  + ' </td>'+
+                '<td>' + v.spec  + ' </td>'+
                 '<td>' + v.price  + ' </td>'+
                 '<td>' + v.depreciate  + ' </td>'+
                 '<td>' + v.cnt_year +'ปี'+ v.cnt_month+'เดือน'+ v.cnt_day+'วัน'+ ' </td>'+
