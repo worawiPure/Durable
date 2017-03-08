@@ -40,6 +40,8 @@ $(function() {
             alert('เลือกประเภทครุภัณฑ์ด้วยครับ !!');
         } else if (!data.price){
             alert('ระบุราคาครุภัณฑ์ด้วยครับ !!');
+        } else if (!data.pieces){
+            alert('ระบุจำนวนชิ้นด้วยครับ');
         } else if (!data.wheremoney){
             alert('เลือกวิธีการได้มาครุภัณฑ์ด้วยครับ !!');
         } else if (!data.order_no){
