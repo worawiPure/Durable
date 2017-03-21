@@ -1,0 +1,150 @@
+extends  ../durable_general_list_layout
+block scripts
+    script(src="/javascripts/general_distribute.js")
+block content
+    br
+    ol.breadcrumb
+        li
+            a(href="/general_add_asset/general_add_asset") กลับ
+        li.active รายการครุภัณฑ์ทั่วไปที่จำหน่ายแล้ว
+    .well.well-sm
+        .row
+            .col-md-6
+                .form-group
+                    label(for="#SlItems") รายการครุภัณฑ์ :
+                    | &nbsp;&nbsp;&nbsp;&nbsp;
+                    select#SlItems.form-control
+            .col-md-6
+                .form-group
+                    button#btnSearch_items(type="button").btn.btn-success.btn-sm ค้นหา
+                    button#btnPrint_items(type="button").btn.btn-danger.btn-sm ปริ้น PDF
+                    button#btnExport_items_excel(type="button").btn.btn-danger.btn-sm ส่งออก Excel
+        div.form-inline
+            .row
+                .col-md-6
+                    .form-group
+                        label(for="#slType") ประเภทครุภัณฑ์ :
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        select#slType.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for b in data.types
+                                option(value="#{b.id}") #{b.name}
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        button#btnSearch_type(type="button").btn.btn-success.btn-sm ค้นหา
+                        button#btnPrint_type(type="button").btn.btn-danger.btn-sm ปริ้น PDF
+                        button#btnExport_type_excel(type="button").btn.btn-danger.btn-sm ส่งออก Excel
+                .col-md-6
+                    .form-group
+                        label(for="#slRoom") ห้องที่ใช้ :
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        select#slRoom.form-control
+                            option(value="") กรุณาเลือกรายการ....
+                            for c in data.rooms
+                                option(value="#{c.id}") #{c.name}
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        button#btnSearch_room(type="button").btn.btn-success.btn-sm ค้นหา
+                        button#btnPrint_room(type="button").btn.btn-danger.btn-sm ปริ้น PDF
+                        button#btnExport_room_excel(type="button").btn.btn-danger.btn-sm ส่งออก Excel
+    .panel.panel-primary
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-comments-o
+                | &nbsp; รายการครุภัณฑ์ทั่วไปที่จำหน่ายแล้ว
+        .panel-body
+            table.table.table-hover#tblDurable_show
+                thead
+                    tr
+                        td ลำดับ
+                        td(style="width : 90px") วันที่รับ
+                        td(style="width : 150px") รหัส/จำนวน
+                        td ชื่อครุภัณฑ์
+                        td รายละเอียด
+                        //td(style="width : 100px") ประเภท
+                        td ราคา/หน่วย
+                        //td วิธีการได้มา
+                        td ใช้ที่
+                        td หมายเหตุ
+                        td
+                            i.fa.fa-cog.fa-spin.fa-3w.fa-fw
+                    tbody
+    .modal.fade#mdlNew(tabindex='-1',role='dialog')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-lable='Close')
+                        span(aria-hidden='true') &times;
+                    h3.modal-title  รายละเอียดครุภัณฑ์
+                    | &nbsp;
+                    | &nbsp;
+                    | &nbsp;
+                .modal-body
+                    input(type="hidden" value="")#txtId
+                    form.form-inline
+                        .form-group
+                            label(for='txtDate_receive') วันที่รับ:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input#txtDate_receive.form-control(type='text',readonly)
+                        .form-group
+                            label(for='txtType') ประเภท:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input#txtType.form-control(type='text', readonly)
+                    | &nbsp;
+                    form.form-inline
+                        .form-group
+                            label(for="txtItens") รายการครุภัณฑ์
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input(type="text" , readonly)#txtItems.form-control
+                        .form-group
+                            label(for="txtRoom") ห้องที่ใช้:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input(type="text" ,readonly)#txtRoom.form-control
+                    | &nbsp;
+                    form.form-inline
+                        .form-group
+                            label(for="txtItems_code") รหัสครุภัณฑ์:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input(type="text", readonly)#txtItems_code.form-control
+                        .form-group
+                            label(for='txtWheremoney') วิธีการได้มา:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input#txtWheremoney.form-control(type='text', readonly)
+                    | &nbsp;
+                    .form-group
+                        label(for="txtSpec") Spec:
+                        textarea#txtSpec(type="text" ,rows="2" ,readonly).form-control
+                    .form-group
+                        label(for='txtCompany') ซื้อมาจาก:
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        input#txtCompany.form-control(type='text', readonly)
+                    form.form-inline
+                        .form-group
+                            label(for='txtprice') ราคา/หน่วย:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input#txtprice.form-control(type='text', readonly)
+                        .form-group
+                            label(for='txtOrder_no') เลขที่เอกสาร:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input#txtOrder_no.form-control(type='text', readonly)
+                    | &nbsp;
+                    form.form-inline
+                        .form-group
+                            label(for="txtStatus") สถานะ:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input(type="text" ,readonly)#txtStatus.form-control
+                        .form-group
+                            label(for="txtChange_room") ย้ายไปยังห้อง:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input(type="text" ,readonly)#txtChange_room.form-control
+                    | &nbsp;
+                    form.form-inline
+                        .form-group
+                            label(for='txtDistribute_date') วันที่จำหน่าย:
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input#txtDistribute_date.form-control(type='text' ,readonly)
+                        .form-group
+                            label(for='txtRemark') หมายเหตุ
+                            | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            input#txtRemark.form-control(type='text', readonly)
+                    .modal-footer
+                        button.btn.btn-danger(data-dismiss="modal")
+                            | &nbsp; ปิดหน้าต่าง

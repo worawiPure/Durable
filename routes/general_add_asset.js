@@ -119,12 +119,51 @@ router.get('/show_detail', function(req,res){
     }
 });
 
+router.get('/report_general_distribute', function(req,res){
+    var db = req.db;
+    var data = {};
+    if (req.session.level_user_id != 2){
+        res.render('./page/access_denied')
+    } else {
+        room.getListRoom(db)
+            .then(function(rows){
+                data.rooms = rows;
+                return type.getListType(db);
+            })
+            .then(function (rows) {
+                data.types = rows;
+                res.render('./page/general_distribute', {data: data});
+            }, function (err) {
+                console.log(err);
+                res.render('./page/general_distribute', {
+                    data: { types:[] ,rooms:[]}
+                });
+            });
+    }
+});
+
 router.post('/durable_search_items',function(req,res){
     var db = req.db;
     var data = {};
     data.items = req.body.items;
     console.log(data);
     show_detail.search_durable_items(db,data)
+        .then(function(rows){
+            console.log(rows);
+            res.send({ok: true,rows:rows});
+        },
+        function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.post('/durable_search_items_distribute',function(req,res){
+    var db = req.db;
+    var data = {};
+    data.items = req.body.items;
+    console.log(data);
+    show_detail.search_durable_items_distribute(db,data)
         .then(function(rows){
             console.log(rows);
             res.send({ok: true,rows:rows});
@@ -151,12 +190,44 @@ router.post('/durable_search_type',function(req,res){
         })
 });
 
+router.post('/durable_search_type_distribute',function(req,res){
+    var db = req.db;
+    var data = {};
+    data.type = req.body.type;
+    console.log(data);
+    show_detail.search_durable_type_distribute(db,data)
+        .then(function(rows){
+            console.log(rows);
+            res.send({ok: true,rows:rows});
+        },
+        function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
 router.post('/durable_search_room',function(req,res){
     var db = req.db;
     var data = {};
     data.room = req.body.room;
     console.log(data);
     show_detail.search_durable_room(db,data)
+        .then(function(rows){
+            console.log(rows);
+            res.send({ok: true,rows:rows});
+        },
+        function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.post('/durable_search_room_distribute',function(req,res){
+    var db = req.db;
+    var data = {};
+    data.room = req.body.room;
+    console.log(data);
+    show_detail.search_durable_room_distribute(db,data)
         .then(function(rows){
             console.log(rows);
             res.send({ok: true,rows:rows});

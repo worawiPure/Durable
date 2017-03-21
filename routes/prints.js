@@ -123,6 +123,110 @@ router.get('/report_general_items/:items_print', function (req, res, next) {
     // ensure directory
 });
 
+router.get('/report_general_items_distribute/:items_print', function (req, res, next) {
+    var db = req.db;
+    var json = {};
+    var _items = {};
+    var items_print = req.params.items_print;
+    report_general.report_durable_items_distribute_price_total(db,items_print)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items.getListItems_print(db,items_print)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _items.detail = rows[0];
+            return report_general.report_durable_distribute_items(db,items_print)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            //json.detail.receive_date2= moment(rows.receive_date,'YYYY-MM-DD').format('DD/MM') +'/'+ (moment(rows.receive_date,'YYYY-MM-DD').get('year') + 543);
+            console.log(json.detail);
+            fse.ensureDirSync('./templates/html');
+            fse.ensureDirSync('./templates/pdf');
+            var destPath = './templates/html/' + moment().format('x');
+            fse.ensureDirSync(destPath);
+            json.img = './img/sign.png';
+            // Create pdf
+            gulp.task('html', function (cb) {
+                return gulp.src('./templates/report_general_items_distribute.jade')
+                    .pipe(data(function () {
+                        return json;
+                    }))
+                    .pipe(jade())
+                    .pipe(gulp.dest(destPath));
+                cb();
+            });
+
+            gulp.task('pdf', ['html'], function () {
+                var html = fs.readFileSync(destPath + '/report_general_items_distribute.html', 'utf8')
+                var options = {
+                    format: 'A4',
+                    orientation: "landscape",
+                    header:{
+                        height: "30mm",
+                        contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
+                        'รายงานครุภัณฑ์ทั่วไปที่จำหน่าย แยกตามรายการครุภัณฑ์   '+ _items.detail.name +'</h2> </div>'
+                    },
+                    footer: {
+                        height: "15mm",
+                        contents: '<span style="color: #444;"><small>Printed: '+ moment( Date() ).format('YYYY-MM-DD HH:mm:ss') +'' +
+                        ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
+                    }
+                };
+                var pdfName = './templates/pdf/general_items_distribute-' + moment().format('x') + '.pdf';
+                pdf.create(html, options).toFile(pdfName, function(err, resp) {
+                    console.log(err);
+                    if (err) {
+                        res.send({ok: false, msg: err});
+                    } else {
+                        res.download(pdfName, function () {
+                            rimraf.sync(destPath);
+                            fse.removeSync(pdfName);
+                        });
+                    }
+                });
+            });
+            // Convert html to pdf
+            gulp.start('pdf');
+        },function(err){
+            res.send({ok: false, msg: err});
+        });
+    // ensure directory
+});
+
 router.get('/report_general_type/:type_print', function (req, res, next) {
     var db = req.db;
     var json = {};
@@ -228,6 +332,111 @@ router.get('/report_general_type/:type_print', function (req, res, next) {
     // ensure directory
 });
 
+router.get('/report_general_type_distribute/:type_print', function (req, res, next) {
+    var db = req.db;
+    var json = {};
+    var _type = {};
+    var type_print = req.params.type_print;
+    report_general.report_durable_type_distribute_price_total(db,type_print)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items.getListType_print(db,type_print)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _type.detail = rows[0];
+            return report_general.report_durable_distribute_type(db,type_print)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            //json.detail.receive_date2= moment(rows.receive_date,'YYYY-MM-DD').format('DD/MM') +'/'+ (moment(rows.receive_date,'YYYY-MM-DD').get('year') + 543);
+            console.log(json.detail);
+            fse.ensureDirSync('./templates/html');
+            fse.ensureDirSync('./templates/pdf');
+            var destPath = './templates/html/' + moment().format('x');
+            fse.ensureDirSync(destPath);
+            json.img = './img/sign.png';
+            // Create pdf
+            gulp.task('html', function (cb) {
+                return gulp.src('./templates/report_general_type_distribute.jade')
+                    .pipe(data(function () {
+                        return json;
+                    }))
+                    .pipe(jade())
+                    .pipe(gulp.dest(destPath));
+                cb();
+            });
+
+            gulp.task('pdf', ['html'], function () {
+                var html = fs.readFileSync(destPath + '/report_general_type_distribute.html', 'utf8')
+                var options = {
+                    format: 'A4',
+                    orientation: "landscape",
+                    header:{
+                        height: "30mm",
+                        contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
+                        'รายงานครุภัณฑ์ทั่วไปที่จำหน่าย แยกตามประเภทครุภัณฑ์   '+ _type.detail.name +'</h2> </div>'
+                    },
+                    footer: {
+                        height: "15mm",
+                        contents: '<span style="color: #444;"><small>Printed: '+ moment(Date()).format('YYYY-MM-DD HH:mm:ss') +'' +
+                        ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
+                    }
+                };
+                var pdfName = './templates/pdf/general_type_distribute-' + moment().format('x') + '.pdf';
+                pdf.create(html, options).toFile(pdfName, function(err, resp) {
+
+                    if (err) {
+                        console.log(err);
+                        res.send({ok: false, msg: err});
+                    } else {
+                        res.download(pdfName, function () {
+                            rimraf.sync(destPath);
+                            fse.removeSync(pdfName);
+                        });
+                    }
+                });
+            });
+            // Convert html to pdf
+            gulp.start('pdf');
+        },function(err){
+            res.send({ok: false, msg: err});
+        });
+    // ensure directory
+});
+
 router.get('/report_general_room/:room_print', function (req, res, next) {
     var db = req.db;
     var json = {};
@@ -304,6 +513,111 @@ router.get('/report_general_room/:room_print', function (req, res, next) {
                         height: "30mm",
                         contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
                         'รายงานครุภัณฑ์ทั่วไป แยกตามห้องที่ใช้ครุภัณฑ์   '+ _room.detail.name +'</h2> </div>'
+                    },
+                    footer: {
+                        height: "15mm",
+                        contents: '<span style="color: #444;"><small>Printed: '+ moment(Date()).format('YYYY-MM-DD HH:mm:ss') +'' +
+                        ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
+                    }
+                };
+                var pdfName = './templates/pdf/general_room-' + moment().format('x') + '.pdf';
+                pdf.create(html, options).toFile(pdfName, function(err, resp) {
+
+                    if (err) {
+                        console.log(err);
+                        res.send({ok: false, msg: err});
+                    } else {
+                        res.download(pdfName, function () {
+                            rimraf.sync(destPath);
+                            fse.removeSync(pdfName);
+                        });
+                    }
+                });
+            });
+            // Convert html to pdf
+            gulp.start('pdf');
+        },function(err){
+            res.send({ok: false, msg: err});
+        });
+    // ensure directory
+});
+
+router.get('/report_general_room_distribute/:room_print', function (req, res, next) {
+    var db = req.db;
+    var json = {};
+    var _room = {};
+    var room_print = req.params.room_print;
+    report_general.report_durable_room_distribute_price_total(db,room_print)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items.getListRoom_print(db,room_print)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _room.detail = rows[0];
+            return report_general.report_durable_distribute_room(db,room_print)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            //json.detail.receive_date2= moment(rows.receive_date,'YYYY-MM-DD').format('DD/MM') +'/'+ (moment(rows.receive_date,'YYYY-MM-DD').get('year') + 543);
+            console.log(json.detail);
+            fse.ensureDirSync('./templates/html');
+            fse.ensureDirSync('./templates/pdf');
+            var destPath = './templates/html/' + moment().format('x');
+            fse.ensureDirSync(destPath);
+            json.img = './img/sign.png';
+            // Create pdf
+            gulp.task('html', function (cb) {
+                return gulp.src('./templates/report_general_room_distribute.jade')
+                    .pipe(data(function () {
+                        return json;
+                    }))
+                    .pipe(jade())
+                    .pipe(gulp.dest(destPath));
+                cb();
+            });
+
+            gulp.task('pdf', ['html'], function () {
+                var html = fs.readFileSync(destPath + '/report_general_room_distribute.html', 'utf8')
+                var options = {
+                    format: 'A4',
+                    orientation: "landscape",
+                    header:{
+                        height: "30mm",
+                        contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
+                        'รายงานครุภัณฑ์ทั่วไปที่จำหน่าย แยกตามห้องที่ใช้ครุภัณฑ์   '+ _room.detail.name +'</h2> </div>'
                     },
                     footer: {
                         height: "15mm",
@@ -501,6 +815,110 @@ router.get('/report_medical_items/:items_print', function (req, res, next) {
     // ensure directory
 });
 
+router.get('/report_medical_items_distribute/:items_print', function (req, res, next) {
+    var db = req.db;
+    var json = {};
+    var _items = {};
+    var items_print = req.params.items_print;
+    report_medical.report_durable_items_distribute_price_total(db,items_print)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items2.getListItems_print(db,items_print)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _items.detail = rows[0];
+            return report_medical.report_durable_distribute_items(db,items_print)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            //json.detail.receive_date2= moment(rows.receive_date,'YYYY-MM-DD').format('DD/MM') +'/'+ (moment(rows.receive_date,'YYYY-MM-DD').get('year') + 543);
+            console.log(json.detail);
+            fse.ensureDirSync('./templates/html');
+            fse.ensureDirSync('./templates/pdf');
+            var destPath = './templates/html/' + moment().format('x');
+            fse.ensureDirSync(destPath);
+            json.img = './img/sign.png';
+            // Create pdf
+            gulp.task('html', function (cb) {
+                return gulp.src('./templates/report_medical_items_distribute.jade')
+                    .pipe(data(function () {
+                        return json;
+                    }))
+                    .pipe(jade())
+                    .pipe(gulp.dest(destPath));
+                cb();
+            });
+
+            gulp.task('pdf', ['html'], function () {
+                var html = fs.readFileSync(destPath + '/report_medical_items_distribute.html', 'utf8')
+                var options = {
+                    format: 'A4',
+                    orientation: "landscape",
+                    header:{
+                        height: "30mm",
+                        contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
+                        'รายงานครุภัณฑ์การแพ่ทย์ที่จำหนาย แยกตามรายการครุภัณฑ์   '+ _items.detail.name +'</h2> </div>'
+                    },
+                    footer: {
+                        height: "15mm",
+                        contents: '<span style="color: #444;"><small>Printed: '+ moment( Date() ).format('YYYY-MM-DD HH:mm:ss') +'' +
+                        ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
+                    }
+                };
+                var pdfName = './templates/pdf/medical_items_distribute-' + moment().format('x') + '.pdf';
+                pdf.create(html, options).toFile(pdfName, function(err, resp) {
+                    console.log(err);
+                    if (err) {
+                        res.send({ok: false, msg: err});
+                    } else {
+                        res.download(pdfName, function () {
+                            rimraf.sync(destPath);
+                            fse.removeSync(pdfName);
+                        });
+                    }
+                });
+            });
+            // Convert html to pdf
+            gulp.start('pdf');
+        },function(err){
+            res.send({ok: false, msg: err});
+        });
+    // ensure directory
+});
+
 router.get('/report_medical_type/:type_print', function (req, res, next) {
     var db = req.db;
     var json = {};
@@ -606,6 +1024,111 @@ router.get('/report_medical_type/:type_print', function (req, res, next) {
     // ensure directory
 });
 
+router.get('/report_medical_type_distribute/:type_print', function (req, res, next) {
+    var db = req.db;
+    var json = {};
+    var _type = {};
+    var type_print = req.params.type_print;
+    report_medical.report_durable_type_distribute_price_total(db,type_print)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items2.getListType_print(db,type_print)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _type.detail = rows[0];
+            return report_medical.report_durable_distribute_type(db,type_print)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            //json.detail.receive_date2= moment(rows.receive_date,'YYYY-MM-DD').format('DD/MM') +'/'+ (moment(rows.receive_date,'YYYY-MM-DD').get('year') + 543);
+            console.log(json.detail);
+            fse.ensureDirSync('./templates/html');
+            fse.ensureDirSync('./templates/pdf');
+            var destPath = './templates/html/' + moment().format('x');
+            fse.ensureDirSync(destPath);
+            json.img = './img/sign.png';
+            // Create pdf
+            gulp.task('html', function (cb) {
+                return gulp.src('./templates/report_medical_type_distribute.jade')
+                    .pipe(data(function () {
+                        return json;
+                    }))
+                    .pipe(jade())
+                    .pipe(gulp.dest(destPath));
+                cb();
+            });
+
+            gulp.task('pdf', ['html'], function () {
+                var html = fs.readFileSync(destPath + '/report_medical_type_distribute.html', 'utf8')
+                var options = {
+                    format: 'A4',
+                    orientation: "landscape",
+                    header:{
+                        height: "30mm",
+                        contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
+                        'รายงานครุภัณฑ์การแพทย์ที่จำหน่าย แยกตามประเภทครุภัณฑ์   '+ _type.detail.name +'</h2> </div>'
+                    },
+                    footer: {
+                        height: "15mm",
+                        contents: '<span style="color: #444;"><small>Printed: '+ moment(Date()).format('YYYY-MM-DD HH:mm:ss') +'' +
+                        ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
+                    }
+                };
+                var pdfName = './templates/pdf/medical_type_distribute-' + moment().format('x') + '.pdf';
+                pdf.create(html, options).toFile(pdfName, function(err, resp) {
+
+                    if (err) {
+                        console.log(err);
+                        res.send({ok: false, msg: err});
+                    } else {
+                        res.download(pdfName, function () {
+                            rimraf.sync(destPath);
+                            fse.removeSync(pdfName);
+                        });
+                    }
+                });
+            });
+            // Convert html to pdf
+            gulp.start('pdf');
+        },function(err){
+            res.send({ok: false, msg: err});
+        });
+    // ensure directory
+});
+
 router.get('/report_medical_room/:room_print', function (req, res, next) {
     var db = req.db;
     var json = {};
@@ -690,6 +1213,111 @@ router.get('/report_medical_room/:room_print', function (req, res, next) {
                     }
                 };
                 var pdfName = './templates/pdf/medical_room-' + moment().format('x') + '.pdf';
+                pdf.create(html, options).toFile(pdfName, function(err, resp) {
+
+                    if (err) {
+                        console.log(err);
+                        res.send({ok: false, msg: err});
+                    } else {
+                        res.download(pdfName, function () {
+                            rimraf.sync(destPath);
+                            fse.removeSync(pdfName);
+                        });
+                    }
+                });
+            });
+            // Convert html to pdf
+            gulp.start('pdf');
+        },function(err){
+            res.send({ok: false, msg: err});
+        });
+    // ensure directory
+});
+
+router.get('/report_medical_room_distribute/:room_print', function (req, res, next) {
+    var db = req.db;
+    var json = {};
+    var _room = {};
+    var room_print = req.params.room_print;
+    report_medical.report_durable_room_distribute_price_total(db,room_print)
+        .then(function(rows){
+            console.log(rows);
+            json.total = numeral(rows).format('0,0.00');
+            return items2.getListRoom_print(db,room_print)
+        })
+        .then(function (rows) {
+            console.log(rows);
+            _room.detail = rows[0];
+            return report_medical.report_durable_distribute_room(db,room_print)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            //json.detail.receive_date2= moment(rows.receive_date,'YYYY-MM-DD').format('DD/MM') +'/'+ (moment(rows.receive_date,'YYYY-MM-DD').get('year') + 543);
+            console.log(json.detail);
+            fse.ensureDirSync('./templates/html');
+            fse.ensureDirSync('./templates/pdf');
+            var destPath = './templates/html/' + moment().format('x');
+            fse.ensureDirSync(destPath);
+            json.img = './img/sign.png';
+            // Create pdf
+            gulp.task('html', function (cb) {
+                return gulp.src('./templates/report_medical_room_distribute.jade')
+                    .pipe(data(function () {
+                        return json;
+                    }))
+                    .pipe(jade())
+                    .pipe(gulp.dest(destPath));
+                cb();
+            });
+
+            gulp.task('pdf', ['html'], function () {
+                var html = fs.readFileSync(destPath + '/report_medical_room_distribute.html', 'utf8')
+                var options = {
+                    format: 'A4',
+                    orientation: "landscape",
+                    header:{
+                        height: "30mm",
+                        contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
+                        'รายงานครุภัณฑ์การแพทย์ที่จำหน่าย แยกตามห้องที่ใช้ครุภัณฑ์   '+ _room.detail.name +'</h2> </div>'
+                    },
+                    footer: {
+                        height: "15mm",
+                        contents: '<span style="color: #444;"><small>Printed: '+ moment(Date()).format('YYYY-MM-DD HH:mm:ss') +'' +
+                        ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
+                    }
+                };
+                var pdfName = './templates/pdf/medical_room_distribute-' + moment().format('x') + '.pdf';
                 pdf.create(html, options).toFile(pdfName, function(err, resp) {
 
                     if (err) {
@@ -1743,6 +2371,69 @@ router.get('/export_general_items/:items_export',function(req, res){
         })
 });
 
+router.get('/export_general_items_distribute/:items_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _items = {};
+    var items_export = req.params.items_export;
+    items.getListItems_print(db,items_export)
+        .then(function (rows) {
+            console.log(rows);
+            _items.detail = rows[0];
+            return report_general.export_durable_distribute_items(db,items_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_items_general-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
 router.get('/export_general_type/:type_export',function(req, res){
     var db = req.db;
     var json = {};
@@ -1758,6 +2449,69 @@ router.get('/export_general_type/:type_export',function(req, res){
             console.log(rows);
             _type.detail = rows[0];
             return report_general.export_durable_type(db,type_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_type_general-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_general_type_distribute/:type_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _type = {};
+    var type_export = req.params.type_export;
+    items.getListType_print(db,type_export)
+        .then(function (rows) {
+            console.log(rows);
+            _type.detail = rows[0];
+            return report_general.export_durable_distribute_type(db,type_export)
         })
         .then(function(rows){
             var _data = [];
@@ -1879,6 +2633,69 @@ router.get('/export_general_room/:room_export',function(req, res){
         })
 });
 
+router.get('/export_general_room_distribute/:room_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _room = {};
+    var room_export = req.params.room_export;
+    items.getListRoom_print(db,room_export)
+        .then(function (rows) {
+            console.log(rows);
+            _room.detail = rows[0];
+            return report_general.export_durable_distribute_room(db,room_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_room_general-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
 router.get('/export_medical_items/:items_export',function(req, res){
     var db = req.db;
     var json = {};
@@ -1894,6 +2711,69 @@ router.get('/export_medical_items/:items_export',function(req, res){
             console.log(rows);
             _items.detail = rows[0];
             return report_medical.export_durable_items(db,items_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_items_medical-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_medical_items_distribute/:items_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _items = {};
+    var items_export = req.params.items_export;
+    items2.getListItems_print(db,items_export)
+        .then(function (rows) {
+            console.log(rows);
+            _items.detail = rows[0];
+            return report_medical.export_durable_distribute_items(db,items_export)
         })
         .then(function(rows){
             var _data = [];
@@ -2015,6 +2895,68 @@ router.get('/export_medical_type/:type_export',function(req, res){
         })
 });
 
+router.get('/export_medical_type_distribute/:type_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _type = {};
+    var type_export = req.params.type_export;
+    items2.getListType_print(db,type_export)
+        .then(function (rows) {
+            console.log(rows);
+            _type.detail = rows[0];
+            return report_medical.export_durable_distribute_type(db,type_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_type_medical_distribute-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
 router.get('/export_medical_room/:room_export',function(req, res){
     var db = req.db;
     var json = {};
@@ -2069,6 +3011,68 @@ router.get('/export_medical_room/:room_export',function(req, res){
             var exportPath = './templates/xls';
             fse.ensureDirSync(exportPath);
             var exportFile = path.join(exportPath, 'export_room_medical-' + moment().format('x') + '.xls');
+            var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
+                'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+        },function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.get('/export_medical_room_distribute/:room_export',function(req, res){
+    var db = req.db;
+    var json = {};
+    var _room = {};
+    var room_export = req.params.room_export;
+    items2.getListRoom_print(db,room_export)
+        .then(function (rows) {
+            console.log(rows);
+            _room.detail = rows[0];
+            return report_medical.export_durable_distribute_room(db,room_export)
+        })
+        .then(function(rows){
+            var _data = [];
+            rows.forEach(function (v) {
+                var obj = {};
+                obj.id = v.id;
+                var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.durable_type = v.durable_type;
+                obj.durable_items = v.durable_items;
+                obj.pieces = v.pieces;
+                obj.spec = v.spec;
+                obj.price = numeral(v.price).format('0,0.00');
+                obj.company = v.company;
+                obj.wheremoney = v.wheremoney;
+                obj.order_no = v.order_no;
+                obj.room = v.room;
+                obj.change_room = v.change_room;
+                obj.remark = v.remark;
+                obj.to_register_date = v.to_register_date;
+                obj.distribute_date = v.distribute_date;
+                obj.status = v.status;
+                obj.date_change = v.date_change;
+                obj.type_name = v.type_name;
+                obj.durable_name = v.durable_name;
+                obj.items_code = v.items_code;
+                obj.provide = v.provide;
+                obj.shop_name = v.shop_name;
+                obj.room_name = v.room_name;
+                obj.status_name = v.status_name;
+                obj.change_room_name = v.change_room_name;
+                _data.push(obj);
+            });
+            json.detail = _data;
+            console.log(json.detail);
+
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'export_room_medical_distribute-' + moment().format('x') + '.xls');
             var xls = json2xls(json.detail,{fields:['receive_date','type_name','durable_name',
                 'items_code','price','provide','shop_name','spec','room_name','order_no','change_room','remark','status_name']});
             fs.writeFileSync(exportFile, xls, 'binary');

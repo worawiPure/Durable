@@ -1,6 +1,6 @@
 $(function() {
 
-    if ( $('#SlStatus').val() == 4 ) {
+    if ( $('#SlStatus').val() == 2 ) {
         $('#divDate_distribute').fadeIn();
     }  else {
         $('#divDate_distribute').fadeOut();
@@ -8,7 +8,7 @@ $(function() {
 
     $('#SlStatus').on('change', function (e) {
         var id = $(this).val();
-        if (id == 4){
+        if (id == 2){
             $('#divDate_distribute').fadeIn();
         } else {
             $('#divDate_distribute').fadeOut();
