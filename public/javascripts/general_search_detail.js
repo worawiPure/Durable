@@ -1,4 +1,5 @@
 $(function() {
+
     var setTable = function(data){
         var $tblDurable = $('#tblDurable_show > tbody');
         $tblDurable.empty();
@@ -28,9 +29,16 @@ $(function() {
                 'data-change_room="'+ v.change_room_name  +'" data-distribute_date= "'+ moment(v.distribute_date_thai).format('DD/MM/YYYY')+'" data-status_name="'+ v.status_name +'" data-id="'+ v.id +'") > '+
                 '<i class="fa fa-edit"> </i> ดูรายละเอียด </a></li> '+
                 '<li> '+
-                '<a href="/general_add_asset/durable_general_show_edit/'+ v.id +'") > '+
+                '<a href="#" class="Edit" data-action="edit" data-receive_date2="'+ moment(v.receive_date_thai).format('DD/MM/YYYY') +'"  data-remark2="'+ v.remark +'" ' +
+                'data-durable_name="'+ v.durable_name +'" data-items_code2="'+ v.code +'" data-pieces2="'+ v.pieces +'" data-spec2="'+ v.spec +'" ' +
+                'data-provide2="'+ v.wheremoney +'" data-price2="'+ v.price +'" data-shop2="'+ v.company +'" data-order_no2="'+ v.order_no +'" data-room2="'+ v.room +'" ' +
+                'data-change_room2="'+ v.change_room  +'" data-distribute_date2= "'+ moment(v.distribute_date_thai).format('DD/MM/YYYY')+'" data-status2="'+ v.status +'" ' +
+                'data-durable_type2="'+ v.durable_type +'" data-durable_items2="'+ v.durable_items +'" data-id="'+ v.id +'") > '+
                 '<i class="fa fa-edit"> </i> แก้ไข </a></li> '+
                 '<li> '+
+                //'<a href="/general_add_asset/durable_general_show_edit/'+ v.id +'") > '+
+                //'<i class="fa fa-edit"> </i> แก้ไข </a></li> '+
+                //'<li> '+
                 '<a href="#" data-action="remove" data-id="'+ v.id +'">'+
                 '<i class="fa fa-trash"> </i>ลบ </a></li></ul></div> ';
         html +='<td> '+
@@ -90,14 +98,91 @@ $(function() {
         })
     });
 
-    //$('#mdlNew').on('hidden.bs.modal', function (e) {
-      //  $('#txtItems').val('');
-       // $('#txtItems_code').val('');
-       // $('#txtRoom').val('');
-       // $('#txtStatus').val('');
-       // $('#txtId').val('');// do something...
-       // $('#divAlert').fadeOut();
-    //});
+    if ( $('#txtStatus2').val() == 2 ) {
+        $('#divDate_distribute2').fadeIn();
+    }  else {
+        $('#divDate_distribute2').fadeOut();
+    }
+    $('#txtStatus2').on('change', function (e) {
+        var id = $(this).val();
+        if (id == 2){
+            $('#divDate_distribute2').fadeIn();
+        } else {
+            $('#divDate_distribute2').fadeOut();
+            $('#txtdistribute_date2').val('');
+        }
+    });
+
+    $(document).on('click','a[data-action="edit"]',function(e){
+        e.preventDefault();
+        var receive_date2 = $(this).data('receive_date2');
+        var durable_type2 = $(this).data('durable_type2');
+        var durable_items2 = $(this).data('durable_items2');
+        var items_code2 = $(this).data('items_code2');
+        var room2 = $(this).data('room2');
+        var pieces2 = $(this).data('pieces2');
+        var shop2 = $(this).data('shop2');
+        var provide2 = $(this).data('provide2');
+        var spec2 = $(this).data('spec2');
+        var price2 = $(this).data('price2');
+        var order_no2 = $(this).data('order_no2');
+        var change_room2 = $(this).data('change_room2');
+        var remark2 = $(this).data('remark2');
+        var status2 = $(this).data('status2');
+        var distribute_date2 = $(this).data('distribute_date2');
+        var id = $(this).data('id');
+
+        $('#txtDate_receive2').val(receive_date2);
+        $('#txtType2').val(durable_type2);
+        $('#txtItems2').val(durable_items2);
+        $('#txtItems_code2').val(items_code2);
+        $('#txtRoom2').val(room2);
+        $('#txtPieces2').val(pieces2);
+        $('#txtCompany2').val(shop2);
+        $('#txtWheremoney2').val(provide2);
+        $('#txtStatus2').val(status2);
+        $('#txtSpec2').val(spec2);
+        $('#txtprice2').val(price2);
+        $('#txtOrder_no2').val(order_no2);
+        $('#txtChange_room2').val(change_room2);
+        $('#txtRemark2').val(remark2);
+        distribute_date2 != 'Invalid date' ? $('#txtDistribute_date2').val(distribute_date2) : $('#txtDistribute_date2').val('');
+        $('#txtId').val(id);
+        $("#Edit").modal({
+            backdrop:'static',
+            keyboard:false
+        })
+    });
+    $('#edit').on('click',function(e){
+        e.preventDefault();
+        $("#Edit").modal({
+            backdrop:'static',
+            keyboard:false
+        })
+    });
+
+    $('#Edit').on('hidden.bs.modal', function (e) {
+        $('#txtDate_receive2').val('');
+        $('#txtType2').val('');
+        $('#txtItems2').val('');
+        $('#txtItems_code2').val('');
+        $('#txtRoom2').val('');
+        $('#txtPieces2').val('');
+        $('#txtCompany2').val('');
+        $('#txtWheremoney2').val('');
+        $('#txtStatus2').val('');
+        $('#txtSpec2').val('');
+        $('#txtprice2').val('');
+        $('#txtOrder_no2').val('');
+        $('#txtChange_room2').val('');
+        $('#txtRemark2').val('');
+        $('#txtDistribute_date2').val('');
+        if ( $('#txtStatus2').val() != 2 ) {
+            $('#divDate_distribute2').fadeOut();
+        }  else {
+            $('#divDate_distribute2').fadeIn();
+        }
+    });
 
     $('#btnPrint_items').fadeOut('slow');
     $('#btnPrint_type').fadeOut('slow');
@@ -211,6 +296,7 @@ $(function() {
         }
     });
 
+
     $('#btnPrint_items').on('click', function(e){
         e.preventDefault();
         var data_items = $("#SlItems").select2('data');
@@ -279,6 +365,60 @@ $(function() {
         }
     });
 
+    $('#btnEdit').on('click', function(e){
+        var data = {};
+        var date_receive = $('#txtDate_receive2').val();
+        var year_recevie = moment(date_receive, 'DD/MM/YYYY').format('YYYY') - 543;
+        data.receive_date = year_recevie + moment(date_receive, 'DD/MM/YYYY').format('-MM-DD');
+        data.durable_type= $('#txtType2').val();
+        data.durable_items = $('#txtItems2').val();
+        data.pieces = $('#txtPieces2').val();
+        data.spec = $('#txtSpec2').val();
+        data.price = $('#txtprice2').val();
+        data.company= $('#txtCompany2').val();
+        data.wheremoney = $('#txtWheremoney2').val();
+        data.order_no = $('#txtOrder_no2').val();
+        data.room = $('#txtRoom2').val();
+        data.status = $('#txtStatus2').val();
+        data.distribute_date = $('#txtdistribute_date2').val();
+        data.change_room = $('#txtChange_room2').val();
+        data.remark = $('#txtRemark2').val();
+        data.id = $('#txtId').val();
+        console.log(data);
+        if (!data.receive_date){
+            alert('เลือกวันที่รับด้วยครับ !!');
+        } else if (!data.durable_type){
+            alert('เลือกประเภทครุภัณฑ์ด้วยครับ !!');
+        } else if (!data.pieces){
+            alert('ระบุจำนวนชิ้นด้วยครับ');
+        } else if (!data.price){
+            alert('ระบุราคาครุภัณฑ์ด้วยครับ !!');
+        } else if (!data.wheremoney){
+            alert('เลือกวิธีการได้มาครุภัณฑ์ด้วยครับ !!');
+        } else if (!data.company){
+            alert('เลือกบริษัทจัดจำหน่ายด้วยครับ !!');
+        } else if (!data.room){
+            alert('ระบุห้องที่ใช้งานด้วยครับ !!');
+        } else {
+            if (confirm('คุณต้องการแก้ไขรายการนี้ ใช่หรือไม่')) {
+                $.ajax({
+                    type: "POST",
+                    url: "/general_add_asset/edit_general_durable",
+                    contentType: 'application/json',
+                    data:JSON.stringify({data: data})
+                })
+                    .success(function() {
+                        alert('ปรับปรุงข้อมูลเรียบร้อยแล้ว');
+                        $('#Edit').modal('hide');
+                    })
+                    .error(function (xhr, status, err) {
+                        console.log(err);
+                        alert(err);
+                    })
+            }
+        }});
+
+
     $("#SlItems").select2({
         ajax: {
             url: "/general_add_asset/select2_items",
@@ -308,5 +448,29 @@ $(function() {
                 };
             }
         }});
+
+    $(document).on('change', '#txtItems2', function (e) {
+        var id = $(this).val();
+        console.log(id);
+        if(id){
+            $.ajax({
+                url: '/general_add_asset/code_items',
+                method: 'POST',
+                data: {id: id}
+            })
+                .success(function (data) {
+                    var $text_code = $('#txtItems_code2');
+                    $text_code.empty();
+                    _.forEach(data.rows, function (v) {
+                        $text_code.val(v.code);
+                    });
+                    $('#divItems_code').fadeIn();
+                })
+                .error(function (xhr, status, err) {
+                })
+        } else {
+            alert('กรุณาเลือกรายการครุภัณฑ์');
+        }
+    });
 
 });

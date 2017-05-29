@@ -9,9 +9,9 @@ $(function() {
                 '<td> ' + i + ' </td>'+
                 '<td> ' + moment(v.receive_date_thai).format('YYYY-MM-DD') +' </td>'+
                 '<td>' + v.items_code  + ' </td>'+
-                //'<td>' + v.type_name  + ' </td>'+
                 '<td>' + v.durable_name  + ' </td>'+
-                '<td>' + v.spec  + ' </td>'+
+                //'<td>' + v.type_name  + ' </td>'+
+                '<td>' + v.spec +'</td>'+
                 '<td>' + v.price  + ' </td>'+
                 //'<td>' + v.provide  + ' </td>'+
                 '<td>' + v.room_name   + ' </td>'+
@@ -35,19 +35,20 @@ $(function() {
                 'data-durable_type2="'+ v.durable_type +'" data-durable_items2="'+ v.durable_items +'" data-id="'+ v.id +'") > '+
                 '<i class="fa fa-edit"> </i> แก้ไข </a></li> '+
                 '<li> '+
-                //'<a href="/medical_add_asset/durable_medical_show_edit/'+ v.id +'") > '+
+                //'<a href="/general_add_asset/durable_general_show_edit/'+ v.id +'") > '+
                 //'<i class="fa fa-edit"> </i> แก้ไข </a></li> '+
                 //'<li> '+
                 '<a href="#" data-action="remove" data-id="'+ v.id +'">'+
                 '<i class="fa fa-trash"> </i>ลบ </a></li></ul></div> ';
         html +='<td> '+
                 '<div class="btn-group btn-group-sm" role="group"> '+
-                '<a class="btn btn-success" type="button" href="/prints/medical/'+ v.id +'" data-toggle="tooltip" data-placement="top" title="ปริ้นเอกสาร"> <i class="fa fa-print"></i></a>';
+                '<a class="btn btn-success" type="button" href="/prints/general/'+ v.id +'" data-toggle="tooltip" data-placement="top" title="ปริ้นเอกสาร"> <i class="fa fa-print"></i></a>';
                 '</div></td> ';
             $tblDurable.append(html);
         });
         $('[data-toggle="tooltip"]').tooltip();
-    }
+    };
+
 
     $(document).on('click','a[data-action="viwe"]',function(e){
         e.preventDefault();
@@ -96,6 +97,21 @@ $(function() {
         })
     });
 
+    if ( $('#txtStatus2').val() == 2 ) {
+        $('#divDate_distribute2').fadeIn();
+    }  else {
+        $('#divDate_distribute2').fadeOut();
+    }
+    $('#txtStatus2').on('change', function (e) {
+        var id = $(this).val();
+        if (id == 2){
+            $('#divDate_distribute2').fadeIn();
+        } else {
+            $('#divDate_distribute2').fadeOut();
+            $('#txtdistribute_date2').val('');
+        }
+    });
+
     $(document).on('click','a[data-action="edit"]',function(e){
         e.preventDefault();
         var receive_date2 = $(this).data('receive_date2');
@@ -115,7 +131,6 @@ $(function() {
         var distribute_date2 = $(this).data('distribute_date2');
         var id = $(this).data('id');
 
-        console.log(distribute_date2);
         $('#txtDate_receive2').val(receive_date2);
         $('#txtType2').val(durable_type2);
         $('#txtItems2').val(durable_items2);
@@ -130,7 +145,7 @@ $(function() {
         $('#txtOrder_no2').val(order_no2);
         $('#txtChange_room2').val(change_room2);
         $('#txtRemark2').val(remark2);
-        $('#txtdistribute_date2').val(distribute_date2);
+        distribute_date2 != 'Invalid date' ? $('#txtDistribute_date2').val(distribute_date2) : $('#txtDistribute_date2').val('');
         $('#txtId').val(id);
         $("#Edit").modal({
             backdrop:'static',
@@ -161,8 +176,12 @@ $(function() {
         $('#txtChange_room2').val('');
         $('#txtRemark2').val('');
         $('#txtDistribute_date2').val('');
+        if ( $('#txtStatus2').val() != 2 ) {
+            $('#divDate_distribute2').fadeOut();
+        }  else {
+            $('#divDate_distribute2').fadeIn();
+        }
     });
-
 
     $('#btnPrint_items').fadeOut('slow');
     $('#btnPrint_type').fadeOut('slow');
@@ -170,6 +189,7 @@ $(function() {
     $('#btnExport_items_excel').fadeOut('slow');
     $('#btnExport_type_excel').fadeOut('slow');
     $('#btnExport_room_excel').fadeOut('slow');
+
 
     $('#btnSearch_items').on('click', function(e){
         e.preventDefault();
@@ -185,7 +205,7 @@ $(function() {
             NProgress.start();
             $.ajax({
                 type: "POST",
-                url: "/medical_add_asset/durable_search_items_distribute",
+                url: "/general_add_asset/durable_search_items_worn-out",
                 contentType: 'application/json',
                 data: JSON.stringify(data)
             })
@@ -219,7 +239,7 @@ $(function() {
             NProgress.start();
             $.ajax({
                 type: "POST",
-                url: "/medical_add_asset/durable_search_type_distribute",
+                url: "/general_add_asset/durable_search_type_worn-out",
                 contentType: 'application/json',
                 data: JSON.stringify(data)
             })
@@ -232,8 +252,8 @@ $(function() {
                     $('#btnExport_items_excel').fadeOut('slow');
                     $('#btnExport_type_excel').fadeIn('slow');
                     $('#btnExport_room_excel').fadeOut('slow');
-                    $("#SlItems").val('').trigger('change');
                     $('#slRoom').val('');
+                    $("#SlItems").val('').trigger('change');
                 })
                 .error(function (xhr, status, err) {
                     alert(err);
@@ -253,7 +273,7 @@ $(function() {
             NProgress.start();
             $.ajax({
                 type: "POST",
-                url: "/medical_add_asset/durable_search_room_distribute",
+                url: "/general_add_asset/durable_search_room_worn-out",
                 contentType: 'application/json',
                 data: JSON.stringify(data)
             })
@@ -262,12 +282,12 @@ $(function() {
                     NProgress.done();
                     $('#btnPrint_room').fadeIn('slow');
                     $('#btnPrint_items').fadeOut('slow');
-                    $('#btnPrint_type').fadeOut('slow')
+                    $('#btnPrint_type').fadeOut('slow');
                     $('#btnExport_items_excel').fadeOut('slow');
                     $('#btnExport_type_excel').fadeOut('slow');
                     $('#btnExport_room_excel').fadeIn('slow');
-                    $("#SlItems").val('').trigger('change');
                     $('#slType').val('');
+                    $("#SlItems").val('').trigger('change');
                 })
                 .error(function (xhr, status, err) {
                     alert(err);
@@ -277,42 +297,42 @@ $(function() {
 
     $('#btnPrint_items').on('click', function(e){
         e.preventDefault();
-        //var items_print = $('#slItems').val();
         var data_items = $("#SlItems").select2('data');
         var items_print = data_items[0].id;
-        window.open('/prints/report_medical_items_distribute/'+items_print)
+        //var items_print = $('#slItems').val();
+        window.open('/prints/report_general_items_worn-out/'+items_print)
     });
 
     $('#btnPrint_type').on('click', function(e){
         e.preventDefault();
         var type_print = $('#slType').val();
-        window.open('/prints/report_medical_type_distribute/'+type_print)
+        window.open('/prints/report_general_type_worn-out/'+type_print)
     });
 
     $('#btnPrint_room').on('click', function(e){
         e.preventDefault();
         var room_print = $('#slRoom').val();
-        window.open('/prints/report_medical_room_distribute/'+room_print)
+        window.open('/prints/report_general_room_worn-out/'+room_print)
     });
 
     $('#btnExport_items_excel').on('click', function(e){
         e.preventDefault();
-       // var items_export = $('#slItems').val();
+        //var items_export = $('#slItems').val();
         var data_items = $("#SlItems").select2('data');
         var items_export = data_items[0].id;
-        window.open('/prints/export_medical_items_distribute/'+items_export)
+        window.open('/prints/export_general_items_worn-out/'+items_export)
     });
 
     $('#btnExport_type_excel').on('click', function(e){
         e.preventDefault();
         var type_export = $('#slType').val();
-        window.open('/prints/export_medical_type_distribute/'+type_export)
+        window.open('/prints/export_general_type_worn-out/'+type_export)
     });
 
     $('#btnExport_room_excel').on('click', function(e){
         e.preventDefault();
         var room_export = $('#slRoom').val();
-        window.open('/prints/export_medical_room_distribute/'+room_export)
+        window.open('/prints/export_general_room_worn-out/'+room_export)
     });
 
     $(document).on('click','a[data-action="remove"]', function(e){
@@ -321,7 +341,7 @@ $(function() {
         if(confirm('คุณต้องการลบรายการนี้ ใช่หรือไม่')){
             $.ajax({
                 method:'POST',
-                url:'/medical_add_asset/remove_medical_items',
+                url:'/general_add_asset/remove_general_items',
                 dataType:'json',
                 data:{
                     id:id
@@ -381,7 +401,7 @@ $(function() {
             if (confirm('คุณต้องการแก้ไขรายการนี้ ใช่หรือไม่')) {
                 $.ajax({
                     type: "POST",
-                    url: "/medical_add_asset/edit_medical_durable",
+                    url: "/general_add_asset/edit_general_durable",
                     contentType: 'application/json',
                     data:JSON.stringify({data: data})
                 })
@@ -398,7 +418,7 @@ $(function() {
 
     $("#SlItems").select2({
         ajax: {
-            url: "/medical_add_asset/select2_items",
+            url: "/general_add_asset/select2_items",
             dataType: 'json',
             delay: 250,
             data: function (params) {
@@ -431,7 +451,7 @@ $(function() {
         console.log(id);
         if(id){
             $.ajax({
-                url: '/medical_add_asset/code_items',
+                url: '/general_add_asset/code_items',
                 method: 'POST',
                 data: {id: id}
             })
@@ -449,4 +469,5 @@ $(function() {
             alert('กรุณาเลือกรายการครุภัณฑ์');
         }
     });
+
 });

@@ -73,7 +73,8 @@ router.post('/code_items',function(req,res){
 router.post('/save_durable_general', function(req,res){
     var db = req.db;
     var data = req.body.data;
-    data.receive_date=moment(data.receive_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    data.receive_date2 = moment(data.receive_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    //data.distribute_date2 = moment(data.distribute_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
     if (data){
         save.check_duplicated_items(db,data)
             .then(function (total){
@@ -107,13 +108,29 @@ router.get('/show_detail', function(req,res){
                     data.rooms = rows;
                     return type.getListType(db);
                 })
+                .then(function(rows){
+                  data.types = rows;
+                  return items.getListItems(db);
+                })
+                .then(function(rows){
+                  data.items = rows;
+                  return company.getListCompany(db);
+                })
+                .then(function(rows){
+                  data.companys = rows;
+                  return money.getListMoney(db);
+                })
+                .then(function(rows){
+                  data.monneys = rows;
+                  return status.getListStatus(db);
+                })
                 .then(function (rows) {
-                    data.types = rows;
+                    data.status = rows;
                     res.render('./page/general_search_detail', {data: data});
                 }, function (err) {
                     console.log(err);
                     res.render('./page/general_search_detail', {
-                        data: { types:[] ,rooms:[]}
+                        data: { types:[] ,rooms:[],items:[],companys:[],monneys:[],status:[]}
                     });
                 });
     }
@@ -130,13 +147,68 @@ router.get('/report_general_distribute', function(req,res){
                 data.rooms = rows;
                 return type.getListType(db);
             })
-            .then(function (rows) {
+            .then(function(rows){
                 data.types = rows;
+                return items.getListItems(db);
+            })
+            .then(function(rows){
+                data.items = rows;
+                return company.getListCompany(db);
+            })
+            .then(function(rows){
+                data.companys = rows;
+                return money.getListMoney(db);
+            })
+            .then(function(rows){
+                data.monneys = rows;
+                return status.getListStatus(db);
+            })
+            .then(function (rows) {
+                data.status = rows;
                 res.render('./page/general_distribute', {data: data});
             }, function (err) {
                 console.log(err);
                 res.render('./page/general_distribute', {
-                    data: { types:[] ,rooms:[]}
+                    data: { types:[] ,rooms:[],items:[],companys:[],monneys:[],status:[]}
+                });
+            });
+    }
+});
+
+router.get('/report_general_worn-out', function(req,res){
+    var db = req.db;
+    var data = {};
+    if (req.session.level_user_id != 2){
+        res.render('./page/access_denied')
+    } else {
+        room.getListRoom(db)
+            .then(function(rows){
+                data.rooms = rows;
+                return type.getListType(db);
+            })
+            .then(function(rows){
+                data.types = rows;
+                return items.getListItems(db);
+            })
+            .then(function(rows){
+                data.items = rows;
+                return company.getListCompany(db);
+            })
+            .then(function(rows){
+                data.companys = rows;
+                return money.getListMoney(db);
+            })
+            .then(function(rows){
+                data.monneys = rows;
+                return status.getListStatus(db);
+            })
+            .then(function (rows) {
+                data.status = rows;
+                res.render('./page/general_worn-out', {data: data});
+            }, function (err) {
+                console.log(err);
+                res.render('./page/general_worn-out', {
+                    data: { types:[] ,rooms:[],items:[],companys:[],monneys:[],status:[]}
                 });
             });
     }
@@ -164,6 +236,22 @@ router.post('/durable_search_items_distribute',function(req,res){
     data.items = req.body.items;
     console.log(data);
     show_detail.search_durable_items_distribute(db,data)
+        .then(function(rows){
+            console.log(rows);
+            res.send({ok: true,rows:rows});
+        },
+        function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.post('/durable_search_items_worn-out',function(req,res){
+    var db = req.db;
+    var data = {};
+    data.items = req.body.items;
+    console.log(data);
+    show_detail.search_durable_items_worn_out(db,data)
         .then(function(rows){
             console.log(rows);
             res.send({ok: true,rows:rows});
@@ -206,6 +294,22 @@ router.post('/durable_search_type_distribute',function(req,res){
         })
 });
 
+router.post('/durable_search_type_worn-out',function(req,res){
+    var db = req.db;
+    var data = {};
+    data.type = req.body.type;
+    console.log(data);
+    show_detail.search_durable_type_worn_out(db,data)
+        .then(function(rows){
+            console.log(rows);
+            res.send({ok: true,rows:rows});
+        },
+        function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
 router.post('/durable_search_room',function(req,res){
     var db = req.db;
     var data = {};
@@ -228,6 +332,22 @@ router.post('/durable_search_room_distribute',function(req,res){
     data.room = req.body.room;
     console.log(data);
     show_detail.search_durable_room_distribute(db,data)
+        .then(function(rows){
+            console.log(rows);
+            res.send({ok: true,rows:rows});
+        },
+        function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.post('/durable_search_room_worn-out',function(req,res){
+    var db = req.db;
+    var data = {};
+    data.room = req.body.room;
+    console.log(data);
+    show_detail.search_durable_room_worn_out(db,data)
         .then(function(rows){
             console.log(rows);
             res.send({ok: true,rows:rows});
@@ -290,8 +410,9 @@ router.get('/durable_general_show_edit/:id', function(req,res){
 router.post('/edit_general_durable', function(req,res){
     var db = req.db;
     var data = req.body.data;
-    data.receive_date=moment(data.receive_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    data.distribute_date=moment(data.distribute_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+   // data.receive_date2=moment(data.receive_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    data.distribute_date2=moment(data.distribute_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    console.log(data.distribute_date2);
     if (data.id) {
         save.edit_general_asset(db,data)
             .then(function(){

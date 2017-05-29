@@ -78,7 +78,7 @@ module.exports = {
     search_durable_items: function(db,data){
         var q = Q.defer();
         var sql =   'SELECT ADDDATE(a.distribute_date,INTERVAL 543 YEAR) as distribute_date_thai,ADDDATE(a.receive_date,INTERVAL 543 YEAR) as receive_date_thai,a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
-            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name,i.code  FROM  medical_asset a '+
             'LEFT JOIN medical_type t ON t.id=a.durable_type '+
             'LEFT JOIN medical_items i ON i.id=a.durable_items '+
             'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
@@ -87,6 +87,9 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_items = ? '+
+            'AND ( a.status = "" '+
+            'OR a.status IS NULL '+
+            'OR a.status = 1) '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[data.items])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -104,7 +107,7 @@ module.exports = {
     search_durable_distribute_items: function(db,data){
         var q = Q.defer();
         var sql =   'SELECT ADDDATE(a.distribute_date,INTERVAL 543 YEAR) as distribute_date_thai,ADDDATE(a.receive_date,INTERVAL 543 YEAR) as receive_date_thai,a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
-            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name,i.code  FROM  medical_asset a '+
             'LEFT JOIN medical_type t ON t.id=a.durable_type '+
             'LEFT JOIN medical_items i ON i.id=a.durable_items '+
             'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
@@ -128,10 +131,37 @@ module.exports = {
         return q.promise;
     },
 
+    search_durable_worn_out_items: function(db,data){
+        var q = Q.defer();
+        var sql =   'SELECT ADDDATE(a.distribute_date,INTERVAL 543 YEAR) as distribute_date_thai,ADDDATE(a.receive_date,INTERVAL 543 YEAR) as receive_date_thai,a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name,i.code  FROM  medical_asset a '+
+            'LEFT JOIN medical_type t ON t.id=a.durable_type '+
+            'LEFT JOIN medical_items i ON i.id=a.durable_items '+
+            'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
+            'LEFT JOIN medical_company o ON o.id=a.company '+
+            'LEFT JOIN medical_room r ON r.id=a.room '+
+            'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
+            'LEFT JOIN durable_status s ON s.id=a.status '+
+            'WHERE a.durable_items = ? '+
+            'AND a.status = 5 '+
+            'ORDER BY a.receive_date ';
+        db.raw(sql,[data.items])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                console.log(rows[0]);
+                q.resolve(rows[0])
+            })
+            .catch(function(err){
+                console.log(err)
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
     search_durable_type: function(db,data){
         var q = Q.defer();
         var sql =   'SELECT ADDDATE(a.distribute_date,INTERVAL 543 YEAR) as distribute_date_thai,ADDDATE(a.receive_date,INTERVAL 543 YEAR) as receive_date_thai,a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
-            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name,i.code  FROM  medical_asset a '+
             'LEFT JOIN medical_type t ON t.id=a.durable_type '+
             'LEFT JOIN medical_items i ON i.id=a.durable_items '+
             'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
@@ -140,6 +170,9 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_type = ? '+
+            'AND ( a.status = "" '+
+            'OR a.status IS NULL '+
+            'OR a.status = 1) '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[data.type])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -157,7 +190,7 @@ module.exports = {
     search_durable_distribute_type: function(db,data){
         var q = Q.defer();
         var sql =   'SELECT ADDDATE(a.distribute_date,INTERVAL 543 YEAR) as distribute_date_thai,ADDDATE(a.receive_date,INTERVAL 543 YEAR) as receive_date_thai,a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
-            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name,i.code  FROM  medical_asset a '+
             'LEFT JOIN medical_type t ON t.id=a.durable_type '+
             'LEFT JOIN medical_items i ON i.id=a.durable_items '+
             'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
@@ -181,10 +214,37 @@ module.exports = {
         return q.promise;
     },
 
+    search_durable_worn_out_type: function(db,data){
+        var q = Q.defer();
+        var sql =   'SELECT ADDDATE(a.distribute_date,INTERVAL 543 YEAR) as distribute_date_thai,ADDDATE(a.receive_date,INTERVAL 543 YEAR) as receive_date_thai,a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name,i.code  FROM  medical_asset a '+
+            'LEFT JOIN medical_type t ON t.id=a.durable_type '+
+            'LEFT JOIN medical_items i ON i.id=a.durable_items '+
+            'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
+            'LEFT JOIN medical_company o ON o.id=a.company '+
+            'LEFT JOIN medical_room r ON r.id=a.room '+
+            'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
+            'LEFT JOIN durable_status s ON s.id=a.status '+
+            'WHERE a.durable_type = ? '+
+            'AND a.status = 5 '+
+            'ORDER BY a.receive_date ';
+        db.raw(sql,[data.type])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                console.log(rows[0]);
+                q.resolve(rows[0])
+            })
+            .catch(function(err){
+                console.log(err)
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
     search_durable_room: function(db,data){
         var q = Q.defer();
         var sql =   'SELECT ADDDATE(a.distribute_date,INTERVAL 543 YEAR) as distribute_date_thai,ADDDATE(a.receive_date,INTERVAL 543 YEAR) as receive_date_thai,a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
-            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name,i.code  FROM  medical_asset a '+
             'LEFT JOIN medical_type t ON t.id=a.durable_type '+
             'LEFT JOIN medical_items i ON i.id=a.durable_items '+
             'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
@@ -193,6 +253,9 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.room = ? '+
+            'AND ( a.status = "" '+
+            'OR a.status IS NULL '+
+            'OR a.status = 1) '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[data.room])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -210,7 +273,7 @@ module.exports = {
     search_durable_distribute_room: function(db,data){
         var q = Q.defer();
         var sql =   'SELECT ADDDATE(a.distribute_date,INTERVAL 543 YEAR) as distribute_date_thai,ADDDATE(a.receive_date,INTERVAL 543 YEAR) as receive_date_thai,a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
-            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name,i.code  FROM  medical_asset a '+
             'LEFT JOIN medical_type t ON t.id=a.durable_type '+
             'LEFT JOIN medical_items i ON i.id=a.durable_items '+
             'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
@@ -220,6 +283,33 @@ module.exports = {
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.room = ? '+
             'AND a.status = 2 '+
+            'ORDER BY a.receive_date ';
+        db.raw(sql,[data.room])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                console.log(rows[0]);
+                q.resolve(rows[0])
+            })
+            .catch(function(err){
+                console.log(err)
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
+    search_durable_worn_out_room: function(db,data){
+        var q = Q.defer();
+        var sql =   'SELECT ADDDATE(a.distribute_date,INTERVAL 543 YEAR) as distribute_date_thai,ADDDATE(a.receive_date,INTERVAL 543 YEAR) as receive_date_thai,a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name,i.code  FROM  medical_asset a '+
+            'LEFT JOIN medical_type t ON t.id=a.durable_type '+
+            'LEFT JOIN medical_items i ON i.id=a.durable_items '+
+            'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
+            'LEFT JOIN medical_company o ON o.id=a.company '+
+            'LEFT JOIN medical_room r ON r.id=a.room '+
+            'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
+            'LEFT JOIN durable_status s ON s.id=a.status '+
+            'WHERE a.room = ? '+
+            'AND a.status = 5 '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[data.room])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -246,6 +336,9 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_items = ? '+
+            'AND ( a.status = "" '+
+            'OR a.status IS NULL '+
+            'OR a.status = 1) '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[items_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -287,6 +380,33 @@ module.exports = {
         return q.promise;
     },
 
+    report_durable_worn_out_items: function(db,items_print){
+        var q = Q.defer();
+        var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'LEFT JOIN medical_type t ON t.id=a.durable_type '+
+            'LEFT JOIN medical_items i ON i.id=a.durable_items '+
+            'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
+            'LEFT JOIN medical_company o ON o.id=a.company '+
+            'LEFT JOIN medical_room r ON r.id=a.room '+
+            'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
+            'LEFT JOIN durable_status s ON s.id=a.status '+
+            'WHERE a.durable_items = ? '+
+            'AND a.status = 5 '+
+            'ORDER BY a.receive_date ';
+        db.raw(sql,[items_print])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                console.log(rows[0]);
+                q.resolve(rows[0])
+            })
+            .catch(function(err){
+                console.log(err)
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
     report_durable_type: function(db,type_print){
         var q = Q.defer();
         var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
@@ -299,6 +419,9 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_type = ? '+
+            'AND ( a.status = "" '+
+            'OR a.status IS NULL '+
+            'OR a.status = 1) '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[type_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -340,8 +463,7 @@ module.exports = {
         return q.promise;
     },
 
-
-    report_durable_distribute_type: function(db,type_print){
+    report_durable_worn_out_type: function(db,type_print){
         var q = Q.defer();
         var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
             'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
@@ -353,7 +475,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_type = ? '+
-            'AND a.status = 2 '+
+            'AND a.status = 5 '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[type_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -380,6 +502,9 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.room = ? '+
+            'AND ( a.status = "" '+
+            'OR a.status IS NULL '+
+            'OR a.status = 1) '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[room_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -421,9 +546,39 @@ module.exports = {
         return q.promise;
     },
 
+    report_durable_worn_out_room: function(db,room_print){
+        var q = Q.defer();
+        var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'LEFT JOIN medical_type t ON t.id=a.durable_type '+
+            'LEFT JOIN medical_items i ON i.id=a.durable_items '+
+            'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
+            'LEFT JOIN medical_company o ON o.id=a.company '+
+            'LEFT JOIN medical_room r ON r.id=a.room '+
+            'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
+            'LEFT JOIN durable_status s ON s.id=a.status '+
+            'WHERE a.room = ? '+
+            'AND a.status = 5 '+
+            'ORDER BY a.receive_date ';
+        db.raw(sql,[room_print])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                console.log(rows[0]);
+                q.resolve(rows[0])
+            })
+            .catch(function(err){
+                console.log(err)
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
     report_durable_items_price_total: function(db,items_print){
         var q = Q.defer();
-        var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.durable_items = ? ';
+        var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.durable_items = ? '+
+                    'AND ( a.status = "" '+
+                    'OR a.status IS NULL '+
+                    'OR a.status = 1) ';
         db.raw(sql,[items_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
             .then(function(rows){
@@ -451,9 +606,27 @@ module.exports = {
         return q.promise;
     },
 
+    report_durable_items_worn_out_price_total: function(db,items_print){
+        var q = Q.defer();
+        var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.durable_items = ? AND a.status = 5 ';
+        db.raw(sql,[items_print])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                q.resolve(rows[0][0].total)
+            })
+            .catch(function(err){
+                console.log(err);
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
     report_durable_type_price_total: function(db,type_print){
         var q = Q.defer();
-        var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.durable_type = ? ';
+        var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.durable_type = ? '+
+                    'AND ( a.status = "" '+
+                    'OR a.status IS NULL '+
+                    'OR a.status = 1) ';
         db.raw(sql,[type_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
             .then(function(rows){
@@ -481,9 +654,28 @@ module.exports = {
         return q.promise;
     },
 
+    report_durable_type_worn_out_price_total: function(db,type_print){
+        var q = Q.defer();
+        var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.durable_type = ? AND a.status = 5 ';
+        db.raw(sql,[type_print])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                q.resolve(rows[0][0].total)
+            })
+            .catch(function(err){
+                console.log(err);
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
+
     report_durable_room_price_total: function(db,room_print){
         var q = Q.defer();
-        var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.room = ? ';
+        var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.room = ? '+
+                    'AND ( a.status = "" '+
+                    'OR a.status IS NULL '+
+                    'OR a.status = 1) ';
         db.raw(sql,[room_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
             .then(function(rows){
@@ -499,6 +691,21 @@ module.exports = {
     report_durable_room_distribute_price_total: function(db,room_print){
         var q = Q.defer();
         var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.room = ? AND a.status = 2 ';
+        db.raw(sql,[room_print])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                q.resolve(rows[0][0].total)
+            })
+            .catch(function(err){
+                console.log(err);
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
+    report_durable_room_worn_out_price_total: function(db,room_print){
+        var q = Q.defer();
+        var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.room = ? AND a.status = 5 ';
         db.raw(sql,[room_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
             .then(function(rows){
@@ -573,7 +780,7 @@ module.exports = {
                 room:data.room,
                 change_room:data.change_room,
                 remark:data.remark,
-                distribute_date:data.distribute_date,
+                distribute_date:data.distribute_date2,
                 status:data.status,
                 date_change: moment().format('YYYY-MM-DD HH:mm:ss')
             })
@@ -816,6 +1023,9 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_items = ? '+
+            'AND ( a.status = "" '+
+            'OR a.status IS NULL '+
+            'OR a.status = 1) '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[items_export])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -857,6 +1067,33 @@ module.exports = {
         return q.promise;
     },
 
+    export_durable_worn_out_items: function(db,items_export){
+        var q = Q.defer();
+        var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'LEFT JOIN medical_type t ON t.id=a.durable_type '+
+            'LEFT JOIN medical_items i ON i.id=a.durable_items '+
+            'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
+            'LEFT JOIN medical_company o ON o.id=a.company '+
+            'LEFT JOIN medical_room r ON r.id=a.room '+
+            'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
+            'LEFT JOIN durable_status s ON s.id=a.status '+
+            'WHERE a.durable_items = ? '+
+            'AND a.status = 5 '+
+            'ORDER BY a.receive_date ';
+        db.raw(sql,[items_export])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                console.log(rows[0]);
+                q.resolve(rows[0])
+            })
+            .catch(function(err){
+                console.log(err)
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
     export_durable_type: function(db,type_export){
         var q = Q.defer();
         var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
@@ -869,6 +1106,9 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_type = ? '+
+            'AND ( a.status = "" '+
+            'OR a.status IS NULL '+
+            'OR a.status = 1) '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[type_export])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -910,6 +1150,33 @@ module.exports = {
         return q.promise;
     },
 
+    export_durable_worn_out_type: function(db,type_export){
+        var q = Q.defer();
+        var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'LEFT JOIN medical_type t ON t.id=a.durable_type '+
+            'LEFT JOIN medical_items i ON i.id=a.durable_items '+
+            'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
+            'LEFT JOIN medical_company o ON o.id=a.company '+
+            'LEFT JOIN medical_room r ON r.id=a.room '+
+            'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
+            'LEFT JOIN durable_status s ON s.id=a.status '+
+            'WHERE a.durable_type = ? '+
+            'AND a.status = 5 '+
+            'ORDER BY a.receive_date ';
+        db.raw(sql,[type_export])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                console.log(rows[0]);
+                q.resolve(rows[0])
+            })
+            .catch(function(err){
+                console.log(err)
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
     export_durable_room: function(db,room_export){
         var q = Q.defer();
         var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
@@ -922,6 +1189,9 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.room = ? '+
+            'AND ( a.status = "" '+
+            'OR a.status IS NULL '+
+            'OR a.status = 1) '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[room_export])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -949,6 +1219,33 @@ module.exports = {
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.room = ? '+
             'AND a.status = 2 '+
+            'ORDER BY a.receive_date ';
+        db.raw(sql,[room_export])
+            //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
+            .then(function(rows){
+                console.log(rows[0]);
+                q.resolve(rows[0])
+            })
+            .catch(function(err){
+                console.log(err)
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
+    export_durable_worn_out_room: function(db,room_export){
+        var q = Q.defer();
+        var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+            'LEFT JOIN medical_type t ON t.id=a.durable_type '+
+            'LEFT JOIN medical_items i ON i.id=a.durable_items '+
+            'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
+            'LEFT JOIN medical_company o ON o.id=a.company '+
+            'LEFT JOIN medical_room r ON r.id=a.room '+
+            'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
+            'LEFT JOIN durable_status s ON s.id=a.status '+
+            'WHERE a.room = ? '+
+            'AND a.status = 5 '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[room_export])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL

@@ -2,6 +2,7 @@ $(function() {
 
 
     $('#divItems_code').fadeOut();
+
     //$('#SlItems').on('change', function (e) {
       //  $('#txtItems_code').val('');
         //   console.log($(this).val());
@@ -37,12 +38,14 @@ $(function() {
         data.spec = $('#txtSpec').val();
         data.price = $('#txtPrice').val();
         data.company= data_company[0].id;
+        //data.company= $("#SlCompany").val();
         data.wheremoney = $('#SlWheremoney').val();
         data.order_no = $('#txtOrder_no').val();
         data.room = $('#SlRoom').val();
         data.change_room = $('#SlChange_room').val();
         data.remark = $('#txtRemark').val();
         data.status = $('#SlStatus').val();
+        //data.distribute_date = $('#txtdistribute_date').val();
         console.log(data);
         if (!data.receive_date){
             alert('เลือกวันที่รับด้วยครับ !!');
@@ -56,14 +59,14 @@ $(function() {
             alert('ระบุราคาครุภัณฑ์ด้วยครับ !!');
         } else if (!data.wheremoney){
             alert('เลือกวิธีการได้มาครุภัณฑ์ด้วยครับ !!');
-        } else if (!data.order_no){
-            alert('ระบุเลขที่ใบสั่งซื้อครุภัณฑ์ด้วยครับ !!');
         } else if (!data.company){
             alert('เลือกบริษัทจัดจำหน่ายด้วยครับ !!');
         } else if (!data.room){
             alert('ระบุห้องที่ใช้งานด้วยครับ !!');
         } else if (!data.status){
             alert('เลือกสถานะครุภัณฑ์ด้วยครับ !!');
+        } else if (data.status == 2){
+        alert('บันทึกครุภัณฑ์ใหม่สถานะไม่ควรเป็นจำหน่ายครับ (บันทึกเป็นสถานะใช้งานก่อน แล้วไปแก้ไขภายหลัง) !!');
         } else {
             if (confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')) {
             $.ajax({
@@ -117,8 +120,6 @@ $(function() {
                 };
             }
         }});
-
-
 
     $("#SlItems").on("change", function (e) {
         $('#txtItems_code').val('');

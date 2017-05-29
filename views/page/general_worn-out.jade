@@ -1,12 +1,12 @@
 extends  ../durable_general_list_layout
 block scripts
-    script(src="/javascripts/general_distribute.js")
+    script(src="/javascripts/general_worn-out.js")
 block content
     br
     ol.breadcrumb
         li
             a(href="/general_add_asset/general_add_asset") กลับ
-        li.active รายการครุภัณฑ์ทั่วไปที่จำหน่ายแล้ว
+        li.active รายการครุภัณฑ์ทั่วไปที่ชำรุด
     .well.well-sm
         .row
             .col-md-6
@@ -49,7 +49,7 @@ block content
         .panel-heading
             h3.panel-title
                 i.fa.fa-comments-o
-                | &nbsp; รายการครุภัณฑ์ทั่วไปที่จำหน่ายแล้ว
+                | &nbsp; รายการครุภัณฑ์ทั่วไปที่ชำรุด
         .panel-body
             table.table.table-hover#tblDurable_show
                 thead
@@ -239,7 +239,7 @@ block content
                                     option(value="") กรุณาเลือกรายการ....
                                     for l in data.status
                                         option(value="#{l.id}") #{l.name}
-                        .col-md-4
+                        .col-md-4#divDate_distribute2
                             .form-group
                                 label(for="#txtdistribute_date2") วันที่จำหน่าย
                                 | &nbsp;&nbsp;&nbsp;&nbsp;

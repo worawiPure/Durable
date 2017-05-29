@@ -44,8 +44,6 @@ $(function() {
             alert('ระบุราคาครุภัณฑ์ด้วยครับ !!');
         } else if (!data.wheremoney){
             alert('เลือกวิธีการได้มาครุภัณฑ์ด้วยครับ !!');
-        } else if (!data.order_no){
-            alert('ระบุเลขที่ใบสั่งซื้อครุภัณฑ์ด้วยครับ !!');
         } else if (!data.company){
             alert('เลือกบริษัทจัดจำหน่ายด้วยครับ !!');
         } else if (!data.room){
@@ -62,7 +60,6 @@ $(function() {
             })
                 .success(function() {
                     alert('ปรับปรุงข้อมูลเรียบร้อยแล้ว');
-                    window.location.href = "/general_add_asset/show_detail";
                 })
                 .error(function (xhr, status, err) {
                     console.log(err);

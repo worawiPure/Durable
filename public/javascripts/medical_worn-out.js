@@ -96,6 +96,21 @@ $(function() {
         })
     });
 
+    if ( $('#txtStatus2').val() == 2 ) {
+        $('#divDate_distribute2').fadeIn();
+    }  else {
+        $('#divDate_distribute2').fadeOut();
+    }
+    $('#txtStatus2').on('change', function (e) {
+        var id = $(this).val();
+        if (id == 2){
+            $('#divDate_distribute2').fadeIn();
+        } else {
+            $('#divDate_distribute2').fadeOut();
+            $('#txtdistribute_date2').val('');
+        }
+    });
+
     $(document).on('click','a[data-action="edit"]',function(e){
         e.preventDefault();
         var receive_date2 = $(this).data('receive_date2');
@@ -115,7 +130,6 @@ $(function() {
         var distribute_date2 = $(this).data('distribute_date2');
         var id = $(this).data('id');
 
-        console.log(distribute_date2);
         $('#txtDate_receive2').val(receive_date2);
         $('#txtType2').val(durable_type2);
         $('#txtItems2').val(durable_items2);
@@ -130,7 +144,7 @@ $(function() {
         $('#txtOrder_no2').val(order_no2);
         $('#txtChange_room2').val(change_room2);
         $('#txtRemark2').val(remark2);
-        $('#txtdistribute_date2').val(distribute_date2);
+        distribute_date2 != 'Invalid date' ? $('#txtDistribute_date2').val(distribute_date2) : $('#txtDistribute_date2').val('');
         $('#txtId').val(id);
         $("#Edit").modal({
             backdrop:'static',
@@ -161,8 +175,12 @@ $(function() {
         $('#txtChange_room2').val('');
         $('#txtRemark2').val('');
         $('#txtDistribute_date2').val('');
+        if ( $('#txtStatus2').val() != 2 ) {
+            $('#divDate_distribute2').fadeOut();
+        }  else {
+            $('#divDate_distribute2').fadeIn();
+        }
     });
-
 
     $('#btnPrint_items').fadeOut('slow');
     $('#btnPrint_type').fadeOut('slow');
@@ -185,7 +203,7 @@ $(function() {
             NProgress.start();
             $.ajax({
                 type: "POST",
-                url: "/medical_add_asset/durable_search_items_distribute",
+                url: "/medical_add_asset/durable_search_items_worn-out",
                 contentType: 'application/json',
                 data: JSON.stringify(data)
             })
@@ -219,7 +237,7 @@ $(function() {
             NProgress.start();
             $.ajax({
                 type: "POST",
-                url: "/medical_add_asset/durable_search_type_distribute",
+                url: "/medical_add_asset/durable_search_type_worn-out",
                 contentType: 'application/json',
                 data: JSON.stringify(data)
             })
@@ -253,7 +271,7 @@ $(function() {
             NProgress.start();
             $.ajax({
                 type: "POST",
-                url: "/medical_add_asset/durable_search_room_distribute",
+                url: "/medical_add_asset/durable_search_room_worn-out",
                 contentType: 'application/json',
                 data: JSON.stringify(data)
             })
@@ -280,19 +298,19 @@ $(function() {
         //var items_print = $('#slItems').val();
         var data_items = $("#SlItems").select2('data');
         var items_print = data_items[0].id;
-        window.open('/prints/report_medical_items_distribute/'+items_print)
+        window.open('/prints/report_medical_items_worn-out/'+items_print)
     });
 
     $('#btnPrint_type').on('click', function(e){
         e.preventDefault();
         var type_print = $('#slType').val();
-        window.open('/prints/report_medical_type_distribute/'+type_print)
+        window.open('/prints/report_medical_type_worn-out/'+type_print)
     });
 
     $('#btnPrint_room').on('click', function(e){
         e.preventDefault();
         var room_print = $('#slRoom').val();
-        window.open('/prints/report_medical_room_distribute/'+room_print)
+        window.open('/prints/report_medical_room_worn-out/'+room_print)
     });
 
     $('#btnExport_items_excel').on('click', function(e){
@@ -300,19 +318,19 @@ $(function() {
        // var items_export = $('#slItems').val();
         var data_items = $("#SlItems").select2('data');
         var items_export = data_items[0].id;
-        window.open('/prints/export_medical_items_distribute/'+items_export)
+        window.open('/prints/export_medical_items_worn-out/'+items_export)
     });
 
     $('#btnExport_type_excel').on('click', function(e){
         e.preventDefault();
         var type_export = $('#slType').val();
-        window.open('/prints/export_medical_type_distribute/'+type_export)
+        window.open('/prints/export_medical_type_worn-out/'+type_export)
     });
 
     $('#btnExport_room_excel').on('click', function(e){
         e.preventDefault();
         var room_export = $('#slRoom').val();
-        window.open('/prints/export_medical_room_distribute/'+room_export)
+        window.open('/prints/export_medical_room_worn-out/'+room_export)
     });
 
     $(document).on('click','a[data-action="remove"]', function(e){

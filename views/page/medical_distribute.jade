@@ -6,7 +6,7 @@ block content
     ol.breadcrumb
         li
             a(href="/medical_add_asset/medical_add_asset") กลับ
-        li.active รายการครุภัณฑ์ทางการแพทย์
+        li.active รายการครุภัณฑ์ทางการแพทย์ที่จำหน่าย
     .well.well-sm
         .row
             .col-md-6
@@ -50,7 +50,7 @@ block content
         .panel-heading
             h3.panel-title
                 i.fa.fa-comments-o
-                | &nbsp; รายการครุภัณฑ์ทางการแพทย์
+                | &nbsp; รายการครุภัณฑ์ทางการแพทย์ที่จำหน่าย
         .panel-body
             table.table.table-hover#tblDurable_show
                 thead
@@ -147,5 +147,121 @@ block content
                             | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             input#txtRemark.form-control(type='text', readonly)
                     .modal-footer
+                        button.btn.btn-danger(data-dismiss="modal")
+                            | &nbsp; ปิดหน้าต่าง
+    .modal.fade#Edit(tabindex='-1',role='dialog')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-lable='Close')
+                        span(aria-hidden='true') &times;
+                    h3.modal-title  คุณกำลังอยู่ในหน้าแก้ไขครุภัณฑ์ทางการแพทย์
+                    | &nbsp;
+                    | &nbsp;
+                    | &nbsp;
+                .modal-body
+                    input(type="hidden",value="")#txtId
+                    .row
+                        .col-md-4
+                            .form-group
+                                label(for='txtDate_receive2') วันที่รับ:
+                                | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                #datetimepicker1.input-group(data-datepicker)
+                                    input#txtDate_receive2.form-control(type='text')
+                                    span.input-group-addon
+                                        span.glyphicon.glyphicon-calendar
+                        .col-md-6
+                            .form-group
+                                label(for="txtType2") ประเภท
+                                select#txtType2.form-control
+                                    option(value="#txtType2") กรุณาเลือกรายการ....
+                                    for c in data.types
+                                        option(value="#{c.id}") #{c.name}
+                    .row
+                        .col-md-6
+                            .form-group
+                                label(for="txtItems2") รายการครุภัณฑ์
+                                select#txtItems2.form-control
+                                    option(value="") กรุณาเลือกรายการ....
+                                    for d in data.items
+                                        option(value="#{d.id}") #{d.name}
+                        .col-md-4
+                            .form-group
+                                label(for="txtRoom2") ห้องที่ใช้
+                                select#txtRoom2.form-control
+                                    option(value="#txtRoom2") กรุณาเลือกรายการ....
+                                    for i in data.rooms
+                                        option(value="#{i.id}") #{i.name}
+                    .row
+                        .col-md-4#divItems_code
+                            .form-group
+                                label(for="txtItems_code2") รหัสครุภัณฑ์
+                                input(type="text", value="", readonly)#txtItems_code2.form-control
+                        .col-md-4
+                            .form-group
+                                label(for="txtPieces2") ชิ้น
+                                input(type="number",name="pieces",placeholder="/")#txtPieces2.form-control
+                    .row
+                        .col-md-6
+                            .form-group
+                                label(for='txtCompany2') ซื้อมาจาก:
+                                select#txtCompany2.form-control
+                                    option(value="#txtCompany2") กรุณาเลือกรายการ....
+                                    for j in data.companys
+                                        option(value="#{j.id}") #{j.shop}
+                        .col-md-6
+                            .form-group
+                                label(for='txtWheremoney') วิธีการได้มา:
+                                select#txtWheremoney2.form-control
+                                    option(value="#txtWheremoney2") กรุณาเลือกรายการ....
+                                    for k in data.monneys
+                                        option(value="#{k.id}") #{k.provide}
+                    .row
+                        .col-md-12
+                            .form-group
+                                label(for="txtSpec2") Spec:
+                                textarea#txtSpec2(type="text",rows="2").form-control
+                    .row
+                        .col-md-6
+                            .form-group
+                                label(for='txtPrice2') ราคา/หน่วย:
+                                | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                input#txtprice2.form-control(type='text')
+                        .col-md-6
+                            .form-group
+                                label(for='txtOrder_no2') เลขที่เอกสาร:
+                                | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                input#txtOrder_no2.form-control(type='text')
+                    .row
+                        .col-md-6
+                            .form-group
+                                label(for="txtStatus2") สถานะ:
+                                select#txtStatus2.form-control
+                                    option(value="") กรุณาเลือกรายการ....
+                                    for l in data.status
+                                        option(value="#{l.id}") #{l.name}
+                        .col-md-4
+                            .form-group
+                                label(for="#txtdistribute_date2") วันที่จำหน่าย
+                                | &nbsp;&nbsp;&nbsp;&nbsp;
+                                #datetimepicker2.input-group(data-datepicker)
+                                    input#txtdistribute_date2.form-control(type='text')
+                                    span.input-group-addon
+                                        span.glyphicon.glyphicon-calendar
+                    .row
+                        .col-md-6
+                            .form-group
+                                label(for="txtChange_room2") ย้ายไปห้อง
+                                select#txtChange_room2.form-control
+                                    option(value="#txtChange_room2") กรุณาเลือกรายการ....
+                                    for m in data.rooms
+                                        option(value="#{m.id}") #{m.name}
+                        .col-md-6
+                            .form-group
+                                label(for='txtRemark2') หมายเหตุ
+                                | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                input#txtRemark2.form-control(type='text')
+                    .modal-footer
+                        button.btn.btn-primary(type="button")#btnEdit บันทึก
                         button.btn.btn-danger(data-dismiss="modal")
                             | &nbsp; ปิดหน้าต่าง
