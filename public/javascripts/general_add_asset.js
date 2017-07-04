@@ -176,4 +176,33 @@ $(function() {
                 };
             }
         }});
+
+    $("#SlRoom").select2({
+        ajax: {
+            url: "/general_add_asset/select2_room",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    term: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data, page) {
+                var myResults = [];
+                $.each(data.room, function (i, v) {
+                    myResults.push({
+                        id: v.id,
+                        text: v.name
+                    });
+                    console.log(myResults);
+                });
+                return {
+                    results: myResults,
+                    pagination: {
+                        more: (page * 30) < data.total
+                    }
+                };
+            }
+        }});
 });

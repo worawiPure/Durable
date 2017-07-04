@@ -703,6 +703,29 @@ router.get('/select2_company', function(req,res){
     }
 });
 
+router.get('/select2_room', function(req,res){
+    var db = req.db;
+    var data = {};
+    data.term = req.query.term;
+    data.page = req.query.page;
+    if (req.session.level_user_id != 2){
+        res.render('./page/access_denied')
+    } else {
+        var _room;
+        room.getListRoom_select2(db,data)
+            .then(function (rows) {
+                _room = rows;
+                return room.getCount_room_select2(db,data)
+            })
+            .then(function(total){
+                res.send({ok:true,room:_room,total:total});
+            }, function (err) {
+                console.log(err);
+                res.send({ok:false,msg:err})
+            });
+    }
+});
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 router.get('/hello/:fname/:lname/:age', function (req,res) {

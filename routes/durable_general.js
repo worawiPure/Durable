@@ -118,7 +118,7 @@ router.post('/save_company', function(req,res){
     var service = req.body.service;
         if (name){
             console.log(name);
-            brand.check_duplicated_company(db,name)
+            company.check_duplicated_company(db,name)
                 .then(function (total) {
                     if (total) {
                         res.send({ok:false, msg:'ข้อมูลซ้ำ'});

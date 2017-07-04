@@ -836,6 +836,39 @@ module.exports = {
 
     /////////////////////////////////////////////////////////////////////////////// End Guarantee ///////////////////////////
 
+    getListRoom_select2: function(db,data) {
+        var q = Q.defer();
+        var w = '%'+data.term+'%';
+        db('medical_room')
+            .select()
+            .where('name', 'like', w)
+            .orderBy('name', 'ASC')
+            .limit(30)
+            .offset(data.page)
+            .then(function (rows) {
+                q.resolve(rows);
+            })
+            .catch(function (err) {
+                q.reject(err);
+            });
+        return q.promise;
+    },
+
+    getCount_room_select2: function (db,data) {
+        var q = Q.defer();
+        var w = '%'+data.term+'%';
+        db('medical_room')
+            .where('name','like',w)
+            .count('* as total')
+            .then(function (rows) {
+                q.resolve(rows[0].total)
+            })
+            .catch(function (err) {
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
     getListRoom_print: function(db,room_print){
         var q = Q.defer();
         db('medical_room')

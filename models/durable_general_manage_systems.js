@@ -75,12 +75,12 @@ module.exports = {
         },
   save_company: function(db,name,address,tel,service){
       var q = Q.defer();
-      db('company')
+      db('general_company')
             .insert({shop:name,address:address,tel:tel,service:service})
             .then(function (rows) {
                 q.resolve(rows);
             })
-            .catch(function(db){
+            .catch(function(err){
                 q.reject(err);
             });
         return q.promise;
@@ -718,6 +718,39 @@ module.exports = {
     },
 
     /////////////////////////////////////////////////////////////////////////////// End Status ///////////////////////////
+
+    getListRoom_select2: function(db,data) {
+        var q = Q.defer();
+        var w = '%'+data.term+'%';
+        db('general_room')
+            .select()
+            .where('name', 'like', w)
+            .orderBy('name', 'ASC')
+            .limit(30)
+            .offset(data.page)
+            .then(function (rows) {
+                q.resolve(rows);
+            })
+            .catch(function (err) {
+                q.reject(err);
+            });
+        return q.promise;
+    },
+
+    getCount_room_select2: function (db,data) {
+        var q = Q.defer();
+        var w = '%'+data.term+'%';
+        db('general_room')
+            .where('name','like',w)
+            .count('* as total')
+            .then(function (rows) {
+                q.resolve(rows[0].total)
+            })
+            .catch(function (err) {
+                q.reject(err)
+            });
+        return q.promise;
+    },
 
     getListRoom_print: function(db,room_print){
         var q = Q.defer();
