@@ -2,8 +2,7 @@ doctype html
 html
     head
         meta(charset="utf-8")
-        center
-            title รายงานครุภัณฑ์ทั่วไป แยกตามประเภทครุภัณฑ์
+        title รายงานค่าเสื่อมครุภัณฑ์ทางการแพทย์ แยกตามประเภทครุภัณฑ์
         style.
             html, body {
                 margin: 0;
@@ -192,6 +191,7 @@ html
                     th ลำดับ
                     th วันที่รับ
                     th รหัส/จำนวน
+                    th ประเภท
                     th รายการ
                     th รายละเอียด
                     th ห้องที่ใช้
@@ -208,6 +208,7 @@ html
                         td #{y}
                         td #{d.receive_date}
                         td #{d.items_code}
+                        td #{d.type_name}
                         td #{d.durable_name}
                         td #{d.spec}
                         td #{d.room_name}

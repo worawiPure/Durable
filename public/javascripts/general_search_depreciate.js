@@ -148,7 +148,7 @@ $(function() {
     $('#btnPrint_type').on('click', function(e){
         e.preventDefault();
         var type_print = $('#slType').val();
-        window.open('/prints/report_general_depreciate_type/'+type_print)
+            window.open('/prints/report_general_depreciate_type/'+type_print)
     });
 
     $('#btnPrint_room').on('click', function(e){

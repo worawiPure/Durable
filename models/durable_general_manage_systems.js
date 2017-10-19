@@ -142,7 +142,7 @@ module.exports = {
 },
 //////////////////////////////////////////////////////  End Company //////////////////////////////////////////////////
 
-  getListType_print: function(db,type_print){
+    getListType_print: function(db,type_print){
         var q = Q.defer();
         db('general_type')
             .select()
