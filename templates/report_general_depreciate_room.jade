@@ -7,7 +7,7 @@ html
             html, body {
                 margin: 0;
                 padding: 10px;
-                font-size: 20px;
+                font-size: 16px;
                 font-family: 'TH Sarabun New';
             }
             div.image {
@@ -196,6 +196,7 @@ html
                     th อายุการใช้งาน
                     th ค่าเสื่อม
                     th มูลค่าคงเหลือ
+                    th สถานะ
             tbody
                 - var y = 0
                 for d in detail
@@ -212,6 +213,5 @@ html
                         td #{d.cnt_year +'ปี'+ d.cnt_month+'เดือน'+ d.cnt_day+'วัน'}
                         td #{d.sum_depreciate2}
                         td #{d.residual_value2}
-                tr
-                    td มูลค่ารวมทั้งหมด
-                    td(colspan="9") #{total} บาท
+                        td #{d.status_name}
+        h2 มูลค่ารวมทั้งหมด #{total} บาท

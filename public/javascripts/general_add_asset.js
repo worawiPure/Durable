@@ -30,15 +30,15 @@ $(function() {
 
     $('#btnSave').on('click', function(e){
         var data = {};
-        var data_company = $("#SlCompany").select2('data');
+        //var data_company = $("#SlCompany").select2('data');
         data.receive_date = $('#txtDate_receive').val();
         data.durable_type= $('#SlType').val();
         data.durable_items = $('#SlItems').val();
         data.pieces = $('#txtPieces').val();
         data.spec = $('#txtSpec').val();
         data.price = $('#txtPrice').val();
-        data.company= data_company[0].id;
-        //data.company= $("#SlCompany").val();
+        //data.company= data_company[0].id;
+        data.company= $("#SlCompany").val();
         data.wheremoney = $('#SlWheremoney').val();
         data.order_no = $('#txtOrder_no').val();
         data.room = $('#SlRoom').val();
@@ -50,17 +50,17 @@ $(function() {
         if (!data.receive_date){
             alert('เลือกวันที่รับด้วยครับ !!');
         } else if (!data.durable_type){
-            alert('เลือกประเภทครุภัณฑ์ด้วยครับ !!');
+            alert('เลือกประเภทครุภัณฑ์ด้วยครับ !!');    
+        } else if (!data.company){
+            alert('เลือกบริษัทจัดจำหน่ายด้วยครับ !!');
         } else if (!data.durable_items){
-            alert('เลือกรายการครุภัณฑ์ด้วยครับ !!');
+            alert('เลือกรายการครุภัณฑ์ด้วยครับ !!');    
         } else if (!data.pieces){
             alert('ระบุจำนวนชิ้นครุภัณฑ์ด้วยครับ !!');
         } else if (!data.price){
             alert('ระบุราคาครุภัณฑ์ด้วยครับ !!');
         } else if (!data.wheremoney){
             alert('เลือกวิธีการได้มาครุภัณฑ์ด้วยครับ !!');
-        } else if (!data.company){
-            alert('เลือกบริษัทจัดจำหน่ายด้วยครับ !!');
         } else if (!data.room){
             alert('ระบุห้องที่ใช้งานด้วยครับ !!');
         } else if (!data.status){

@@ -382,8 +382,12 @@ module.exports = {
 
     report_durable_worn_out_items: function(db,items_print){
         var q = Q.defer();
-        var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
-            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+        var sql =   ' SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name, '+
+            'timestampdiff(year,a.receive_date,curdate()) as cnt_year, '+
+            'timestampdiff(month,a.receive_date,curdate())-(timestampdiff(year,a.receive_date,curdate())*12) as cnt_month, '+
+            'timestampdiff(day,date_add(a.receive_date,interval(timestampdiff(month,a.receive_date,curdate())) month),curdate()) as cnt_day, '+
+            '((a.price*t.depreciate_l)/100) as depreciate,t.age_l   FROM  medical_asset a '+
             'LEFT JOIN medical_type t ON t.id=a.durable_type '+
             'LEFT JOIN medical_items i ON i.id=a.durable_items '+
             'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
@@ -392,7 +396,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_items = ? '+
-            'AND a.status = 5 '+
+            'AND a.status = 5    '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[items_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -465,8 +469,12 @@ module.exports = {
 
     report_durable_worn_out_type: function(db,type_print){
         var q = Q.defer();
-        var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
-            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+        var sql =    ' SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name, '+
+            'timestampdiff(year,a.receive_date,curdate()) as cnt_year, '+
+            'timestampdiff(month,a.receive_date,curdate())-(timestampdiff(year,a.receive_date,curdate())*12) as cnt_month, '+
+            'timestampdiff(day,date_add(a.receive_date,interval(timestampdiff(month,a.receive_date,curdate())) month),curdate()) as cnt_day, '+
+            '((a.price*t.depreciate_l)/100) as depreciate,t.age_l   FROM  medical_asset a '+
             'LEFT JOIN medical_type t ON t.id=a.durable_type '+
             'LEFT JOIN medical_items i ON i.id=a.durable_items '+
             'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
@@ -475,7 +483,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_type = ? '+
-            'AND a.status = 5 '+
+            'AND a.status = 5    '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[type_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -548,8 +556,12 @@ module.exports = {
 
     report_durable_worn_out_room: function(db,room_print){
         var q = Q.defer();
-        var sql =   'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
-            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name  FROM  medical_asset a '+
+        var sql =   ' SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+            'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name, '+
+            'timestampdiff(year,a.receive_date,curdate()) as cnt_year, '+
+            'timestampdiff(month,a.receive_date,curdate())-(timestampdiff(year,a.receive_date,curdate())*12) as cnt_month, '+
+            'timestampdiff(day,date_add(a.receive_date,interval(timestampdiff(month,a.receive_date,curdate())) month),curdate()) as cnt_day, '+
+            '((a.price*t.depreciate_l)/100) as depreciate,t.age_l   FROM  medical_asset a '+
             'LEFT JOIN medical_type t ON t.id=a.durable_type '+
             'LEFT JOIN medical_items i ON i.id=a.durable_items '+
             'LEFT JOIN durable_where_money w ON w.id=a.wheremoney '+
@@ -558,7 +570,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.room = ? '+
-            'AND a.status = 5 '+
+            'AND a.status = 5    '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[room_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -576,9 +588,7 @@ module.exports = {
     report_durable_items_price_total: function(db,items_print){
         var q = Q.defer();
         var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.durable_items = ? '+
-                    'AND ( a.status = "" '+
-                    'OR a.status IS NULL '+
-                    'OR a.status = 1) ';
+                    'AND a.status IN ("1","5") ';
         db.raw(sql,[items_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
             .then(function(rows){
@@ -624,9 +634,7 @@ module.exports = {
     report_durable_type_price_total: function(db,type_print){
         var q = Q.defer();
         var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.durable_type = ? '+
-                    'AND ( a.status = "" '+
-                    'OR a.status IS NULL '+
-                    'OR a.status = 1) ';
+                    'AND a.status IN ("1","5")  ';
         db.raw(sql,[type_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
             .then(function(rows){
@@ -673,9 +681,7 @@ module.exports = {
     report_durable_room_price_total: function(db,room_print){
         var q = Q.defer();
         var sql =   'SELECT SUM(a.price) as total FROM medical_asset a WHERE a.room = ? '+
-                    'AND ( a.status = "" '+
-                    'OR a.status IS NULL '+
-                    'OR a.status = 1) ';
+                    'AND  a.status IN ("1","5")  ';
         db.raw(sql,[room_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
             .then(function(rows){
@@ -824,6 +830,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_items = ? '+
+            'AND a.status IN ("1","5")  '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[data.items])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -853,6 +860,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_type = ? '+
+            'AND a.status IN ("1","5") '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[data.type])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -882,6 +890,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.room = ? '+
+            'AND a.status IN ("1","5")  '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[data.room])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -911,6 +920,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_items = ? '+
+            'AND a.status IN ("1","5")  '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[items_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -926,7 +936,7 @@ module.exports = {
 
     report_depreciate_print_type: function(db,type_print){
         var q = Q.defer();
-        var sql =   ' SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
+        var sql =  'SELECT a.*,t.name as type_name,i.name as durable_name,CONCAT(i.code,"/",a.pieces) as items_code, '+
             'w.provide,o.shop as shop_name,r.name as room_name,s.name as status_name,r2.name as change_room_name, '+
             'timestampdiff(year,a.receive_date,curdate()) as cnt_year, '+
             'timestampdiff(month,a.receive_date,curdate())-(timestampdiff(year,a.receive_date,curdate())*12) as cnt_month, '+
@@ -940,6 +950,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_type = ? '+
+            'AND a.status IN ("1","5") '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[type_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -969,6 +980,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.room = ? '+
+            'AND a.status IN ("1","5")  '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[room_print])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -1276,6 +1288,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_items = ? '+
+            'AND a.status IN ("1","5")  '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[items_export])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -1305,6 +1318,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.durable_type = ? '+
+            'AND a.status IN ("1","5")  '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[type_export])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
@@ -1334,6 +1348,7 @@ module.exports = {
             'LEFT JOIN medical_room r2 ON r2.id=a.change_room '+
             'LEFT JOIN durable_status s ON s.id=a.status '+
             'WHERE a.room = ? '+
+            'AND a.status IN ("1","5")  '+
             'ORDER BY a.receive_date ';
         db.raw(sql,[room_export])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL

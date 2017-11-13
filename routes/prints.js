@@ -249,7 +249,7 @@ router.get('/report_general_items_worn-out/:items_print', function (req, res, ne
                 var obj = {};
                 obj.id = v.id;
                 var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
-                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
                 obj.durable_type = v.durable_type;
                 obj.durable_items = v.durable_items;
                 obj.pieces = v.pieces;
@@ -273,6 +273,23 @@ router.get('/report_general_items_worn-out/:items_print', function (req, res, ne
                 obj.room_name = v.room_name;
                 obj.status_name = v.status_name;
                 obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
                 _data.push(obj);
             });
             json.detail = _data;
@@ -554,7 +571,7 @@ router.get('/report_general_type_worn-out/:type_print', function (req, res, next
         })
         .then(function (rows) {
             console.log(rows);
-            _type.detail = rows[0];
+            json.type = rows[0];
             return report_general.report_durable_worn_out_type(db,type_print)
         })
         .then(function(rows){
@@ -563,7 +580,7 @@ router.get('/report_general_type_worn-out/:type_print', function (req, res, next
                 var obj = {};
                 obj.id = v.id;
                 var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
-                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
                 obj.durable_type = v.durable_type;
                 obj.durable_items = v.durable_items;
                 obj.pieces = v.pieces;
@@ -587,6 +604,23 @@ router.get('/report_general_type_worn-out/:type_print', function (req, res, next
                 obj.room_name = v.room_name;
                 obj.status_name = v.status_name;
                 obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
                 _data.push(obj);
             });
             json.detail = _data;
@@ -614,14 +648,20 @@ router.get('/report_general_type_worn-out/:type_print', function (req, res, next
                     format: 'A4',
                     orientation: "landscape",
                     header:{
-                        height: "30mm",
-                        contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
-                        'รายงานครุภัณฑ์ทั่วไปที่ชำรุด แยกตามประเภทครุภัณฑ์   '+ _type.detail.name +'</h2> </div>'
+                        height: "20mm"
+                        //     contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
+                        //     'รายงานค่าเสื่อมครุภัณฑ์ทั่วไป แยกตามประเภทครุภัณฑ์   '+ _type.detail.name +'</h2> </div>'
+                    },
+                    border: {
+                        "top": "0mm",            // default is 0, units: mm, cm, in, px
+                        "right": "0mm",
+                        "bottom": "0mm",
+                        "left": "10mm"
                     },
                     footer: {
-                        height: "15mm",
-                        contents: '<span style="color: #444;"><small>Printed: '+ moment(Date()).format('YYYY-MM-DD HH:mm:ss') +'' +
-                        ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
+                        height: "10mm"
+                        //     contents: '<span style="color: #444;"><small>Printed: '+ moment( Date() ).format('YYYY-MM-DD HH:mm:ss') +'' +
+                        //     ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
                     }
                 };
                 var pdfName = './templates/pdf/general_type_worn-out-' + moment().format('x') + '.pdf';
@@ -878,7 +918,7 @@ router.get('/report_general_room_worn-out/:room_print', function (req, res, next
                 var obj = {};
                 obj.id = v.id;
                 var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
-                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
                 obj.durable_type = v.durable_type;
                 obj.durable_items = v.durable_items;
                 obj.pieces = v.pieces;
@@ -902,6 +942,23 @@ router.get('/report_general_room_worn-out/:room_print', function (req, res, next
                 obj.room_name = v.room_name;
                 obj.status_name = v.status_name;
                 obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
                 _data.push(obj);
             });
             json.detail = _data;
@@ -1255,7 +1312,7 @@ router.get('/report_medical_items_worn-out/:items_print', function (req, res, ne
                 var obj = {};
                 obj.id = v.id;
                 var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
-                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
                 obj.durable_type = v.durable_type;
                 obj.durable_items = v.durable_items;
                 obj.pieces = v.pieces;
@@ -1279,6 +1336,23 @@ router.get('/report_medical_items_worn-out/:items_print', function (req, res, ne
                 obj.room_name = v.room_name;
                 obj.status_name = v.status_name;
                 obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
                 _data.push(obj);
             });
             json.detail = _data;
@@ -1560,7 +1634,7 @@ router.get('/report_medical_type_worn-out/:type_print', function (req, res, next
         })
         .then(function (rows) {
             console.log(rows);
-            _type.detail = rows[0];
+            json.type = rows[0];
             return report_medical.report_durable_worn_out_type(db,type_print)
         })
         .then(function(rows){
@@ -1569,7 +1643,7 @@ router.get('/report_medical_type_worn-out/:type_print', function (req, res, next
                 var obj = {};
                 obj.id = v.id;
                 var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
-                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
                 obj.durable_type = v.durable_type;
                 obj.durable_items = v.durable_items;
                 obj.pieces = v.pieces;
@@ -1593,6 +1667,23 @@ router.get('/report_medical_type_worn-out/:type_print', function (req, res, next
                 obj.room_name = v.room_name;
                 obj.status_name = v.status_name;
                 obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
                 _data.push(obj);
             });
             json.detail = _data;
@@ -1620,14 +1711,20 @@ router.get('/report_medical_type_worn-out/:type_print', function (req, res, next
                     format: 'A4',
                     orientation: "landscape",
                     header:{
-                        height: "30mm",
-                        contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
-                        'รายงานครุภัณฑ์การแพทย์ที่ชำรุด แยกตามประเภทครุภัณฑ์   '+ _type.detail.name +'</h2> </div>'
+                        height: "20mm"
+                        //     contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
+                        //     'รายงานค่าเสื่อมครุภัณฑ์ทั่วไป แยกตามประเภทครุภัณฑ์   '+ _type.detail.name +'</h2> </div>'
+                    },
+                    border: {
+                        "top": "0mm",            // default is 0, units: mm, cm, in, px
+                        "right": "3mm",
+                        "bottom": "0mm",
+                        "left": "10mm"
                     },
                     footer: {
-                        height: "15mm",
-                        contents: '<span style="color: #444;"><small>Printed: '+ moment(Date()).format('YYYY-MM-DD HH:mm:ss') +'' +
-                        ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
+                        height: "10mm"
+                        //     contents: '<span style="color: #444;"><small>Printed: '+ moment( Date() ).format('YYYY-MM-DD HH:mm:ss') +'' +
+                        //     ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
                     }
                 };
                 var pdfName = './templates/pdf/medical_type_worn-out-' + moment().format('x') + '.pdf';
@@ -1881,10 +1978,10 @@ router.get('/report_medical_room_worn-out/:room_print', function (req, res, next
         .then(function(rows){
             var _data = [];
             rows.forEach(function (v) {
-                var obj = {};
+               var obj = {};
                 obj.id = v.id;
                 var monthName = utils.getMonthName(moment(v.receive_date).format('MM'));
-                obj.receive_date = moment(v.receive_date).format('DD') + ' ' +monthName + ' ' + (moment(v.receive_date).get('year') + 543);
+                obj.receive_date = moment(v.receive_date).format('DD') + ' ' + monthName + ' ' + (moment(v.receive_date).get('year') + 543);
                 obj.durable_type = v.durable_type;
                 obj.durable_items = v.durable_items;
                 obj.pieces = v.pieces;
@@ -1908,6 +2005,23 @@ router.get('/report_medical_room_worn-out/:room_print', function (req, res, next
                 obj.room_name = v.room_name;
                 obj.status_name = v.status_name;
                 obj.change_room_name = v.change_room_name;
+                obj.cnt_year = v.cnt_year;
+                obj.cnt_month = v.cnt_month;
+                obj.cnt_day = v.cnt_day;
+                obj.depreciate = numeral(v.depreciate).format('0,0.00');
+                if(v.cnt_year >= v.age_l) {
+                    obj.sum_depreciate = 1;
+                    obj.residual_value = 1;
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                } else {
+                    obj.year_depreciate = parseFloat(v.depreciate) * parseFloat(v.cnt_year);
+                    obj.month_depreciate = (parseFloat(v.depreciate) * parseFloat(v.cnt_month)) / 12;
+                    obj.sum_depreciate = parseFloat(obj.year_depreciate) + parseFloat(obj.month_depreciate);
+                    obj.residual_value = parseFloat(v.price) - parseFloat(obj.sum_depreciate);
+                    obj.sum_depreciate2 = numeral(obj.sum_depreciate).format('0,0.00');
+                    obj.residual_value2 = numeral(obj.residual_value).format('0,0.00');
+                }
                 _data.push(obj);
             });
             json.detail = _data;
@@ -2322,17 +2436,23 @@ router.get('/report_general_depreciate_type/:type_print', function (req, res, ne
                     var html = fs.readFileSync(destPath + '/report_general_depreciate_type.html', 'utf8')
                     var options = {
                         format: 'A4',
-                        orientation: "landscape"
-                       // header:{
-                       //     height: "30mm",
+                        orientation: "landscape",
+                        header:{
+                            height: "20mm"
                        //     contents: '<div style="text-align: center"><h2> โรงพยาบาลกันทรวิชัย อ.กันทรวิชัย จ.มหาสารคาม<br>' +
                        //     'รายงานค่าเสื่อมครุภัณฑ์ทั่วไป แยกตามประเภทครุภัณฑ์   '+ _type.detail.name +'</h2> </div>'
-                       // },
-                       // footer: {
-                       //     height: "15mm",
+                        },
+                        border: {
+                            "top": "0mm",            // default is 0, units: mm, cm, in, px
+                            "right": "0mm",
+                            "bottom": "0mm",
+                            "left": "10mm"
+                        },
+                        footer: {
+                            height: "10mm"
                        //     contents: '<span style="color: #444;"><small>Printed: '+ moment( Date() ).format('YYYY-MM-DD HH:mm:ss') +'' +
                        //     ' หน้า <span style="color: #444;">{{page}}</span>/<span>{{pages}}</span> '
-                       // }
+                        }
                     };
                     var pdfName = './templates/pdf/general_depreciate_type-' + moment().format('x') + '.pdf';
                     pdf.create(html, options).toFile(pdfName, function(err, resp) {
@@ -4232,11 +4352,11 @@ router.get('/export_depreciate_items_general/:items_export',function(req, res){
     var json = {};
     var _items = {};
     var items_export = req.params.items_export;
-    report_general.report_durable_type_price_total(db,items_export)
+    report_general.report_durable_items_price_total(db,items_export)
         .then(function(rows){
             console.log(rows);
             json.total = numeral(rows).format('0,0.00');
-            return items.getListType_print(db,items_export)
+            return items.getListItems_print(db,items_export)
         })
         .then(function (rows) {
             console.log(rows);
@@ -4318,11 +4438,11 @@ router.get('/export_depreciate_room_general/:room_export',function(req, res){
     var json = {};
     var _room = {};
     var room_export = req.params.room_export;
-    report_general.report_durable_type_price_total(db,room_export)
+    report_general.report_durable_room_price_total(db,room_export)
         .then(function(rows){
             console.log(rows);
             json.total = numeral(rows).format('0,0.00');
-            return items.getListType_print(db,room_export)
+            return items.getListRoom_print(db,room_export)
         })
         .then(function (rows) {
             console.log(rows);
@@ -4490,11 +4610,11 @@ router.get('/export_depreciate_items_medical/:items_export',function(req, res){
     var json = {};
     var _items = {};
     var items_export = req.params.items_export;
-    report_medical.report_durable_type_price_total(db,items_export)
+    report_medical.report_durable_items_price_total(db,items_export)
         .then(function(rows){
             console.log(rows);
             json.total = numeral(rows).format('0,0.00');
-            return items2.getListType_print(db,items_export)
+            return items2.getListItems_print(db,items_export)
         })
         .then(function (rows) {
             console.log(rows);
@@ -4576,11 +4696,11 @@ router.get('/export_depreciate_room_medical/:room_export',function(req, res){
     var json = {};
     var _room = {};
     var room_export = req.params.room_export;
-    report_medical.report_durable_type_price_total(db,room_export)
+    report_medical.report_durable_room_price_total(db,room_export)
         .then(function(rows){
             console.log(rows);
             json.total = numeral(rows).format('0,0.00');
-            return items2.getListType_print(db,room_export)
+            return items2.getListRoom_print(db,room_export)
         })
         .then(function (rows) {
             console.log(rows);

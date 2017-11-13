@@ -28,14 +28,15 @@ $(function() {
 
     $('#btnSave').on('click', function(e){
         var data = {};
-        var data_company = $("#SlCompany").select2('data');
+        //var data_company = $("#SlCompany").select2('data');
         data.receive_date = $('#txtDate_receive').val();
         data.durable_type= $('#SlType').val();
         data.durable_items = $('#SlItems').val();
         data.pieces = $('#txtPieces').val();
         data.spec = $('#txtSpec').val();
         data.price = $('#txtPrice').val();
-        data.company= data_company[0].id;
+        //data.company= data_company[0].id;
+        data.company = $('#SlCompany').val()
         data.wheremoney = $('#SlWheremoney').val();
         data.order_no = $('#txtOrder_no').val();
         data.room = $('#SlRoom').val();

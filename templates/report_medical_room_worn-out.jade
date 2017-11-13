@@ -7,7 +7,7 @@ html
             html, body {
                 margin: 0;
                 padding: 10px;
-                font-size: 20px;
+                font-size: 16px;
                 font-family: 'TH Sarabun New';
             }
             div.image {
@@ -187,15 +187,17 @@ html
                 tr
                     th ลำดับ
                     th วันที่รับ
-                    th รหัส/จำนวน
+                    th รหัส
                     th ประเภท
                     th รายการ
                     th รายละเอียด
-                    th ราคา/หน่วย
-                    th วิธีการได้มา
-                    th ใช้ที่
-                    th การเปลี่ยนแปลง
-                    th หมายเหตุ
+                    th ห้องที่ใช้
+                    th ราคา
+                    th ค่าเสื่อม/ปี
+                    th อายุงาน
+                    th ค่าเสื่อม
+                    th คงเหลือ
+                    th สถานะ
             tbody
                 - var y = 0
                 for d in detail
@@ -207,11 +209,11 @@ html
                         td #{d.type_name}
                         td #{d.durable_name}
                         td #{d.spec}
-                        td #{d.price}
-                        td #{d.provide}
                         td #{d.room_name}
-                        td #{d.change_room_name}
-                        td #{d.remark}
-                tr
-                    td มูลค่ารวมทั้งหมด
-                    td(colspan="9") #{total} บาท
+                        td #{d.price}
+                        td #{d.depreciate}
+                        td #{d.cnt_year + 'ปี' + d.cnt_month + 'เดือน' + d.cnt_day + 'วัน'}
+                        td #{d.sum_depreciate2}
+                        td #{d.residual_value2}
+                        td #{d.status_name}
+        h2 มูลค่ารวมทั้งหมด #{total} บาท

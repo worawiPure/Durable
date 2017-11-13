@@ -267,7 +267,7 @@ $(function() {
         var room = $('#slRoom').val();
         data.room = room;
         if(!data.room) {
-            alert('กรุณาเลือกประเภทด้วยครับ!!')
+            alert('กรุณาเลือกห้องที่ใช้ด้วยครับ!!')
         } else {
             console.log(data);
             NProgress.start();
